@@ -81,20 +81,34 @@ npm install
 3. **Configurar variables de entorno**
 
 ```bash
+# Crear archivo .env desde la plantilla
 cp .env.example .env
+
+# Editar las variables según tu configuración
+nano .env
 ```
 
-Editar `.env` con tus configuraciones:
+**Configuración mínima requerida en `.env`:**
 
 ```env
+# Base de datos
 DB_HOST=localhost
 DB_PORT=5432
 DB_USERNAME=postgres
-DB_PASSWORD=tu_password
+DB_PASSWORD=tu_password_seguro
 DB_DATABASE=townhallpedia
+
+# Entorno
+NODE_ENV=development
+PORT=3000
+
+# TypeORM (IMPORTANTE: NO usar synchronize=true en producción)
 DB_SYNCHRONIZE=false
 DB_LOGGING=false
+DB_MIGRATIONS_RUN=false
 ```
+
+> 📋 **Ver [ENV_SETUP.md](./ENV_SETUP.md) para configuración completa y mejores prácticas**
 
 4. **Ejecutar migraciones**
 

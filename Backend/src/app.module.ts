@@ -4,6 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { getDatabaseConfig } from './config/database.config';
+import { validate } from './config/env.validation';
+import envConfig from './config/env.config';
 import {
   AyuntamientoModule,
   EdificioModule,
@@ -18,7 +20,10 @@ import {
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      envFilePath: ['.env.local', '.env'],
+      validate,
+      load: [envConfig],
+      cache: true,
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

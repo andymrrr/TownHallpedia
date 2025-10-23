@@ -17,18 +17,19 @@ export abstract class BaseService<T extends BaseEntity> {
   }
 
   async create(entity: Partial<T>): Promise<T> {
-    const newEntity = this.repository.create(entity);
-    return this.repository.save(newEntity);
+    const newEntity = this.repository.create(entity as any);
+    const saved = await this.repository.save(newEntity);
+    return Array.isArray(saved) ? saved[0] : saved;
   }
 
   async update(id: number, entity: Partial<T>): Promise<T | null> {
-    await this.repository.update(id, entity);
+    await this.repository.update(id, entity as any);
     return this.findOne(id);
   }
 
   async delete(id: number): Promise<boolean> {
     const result = await this.repository.delete(id);
-    return result.affected > 0;
+    return (result.affected ?? 0) > 0;
   }
 
   async count(where?: FindOptionsWhere<T>): Promise<number> {
