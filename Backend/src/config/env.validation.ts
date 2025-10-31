@@ -1,40 +1,72 @@
 import { plainToClass, Transform } from 'class-transformer';
-import { IsString, IsNumber, IsBoolean, validateSync } from 'class-validator';
+import { IsString, IsNumber, IsBoolean, IsOptional, validateSync } from 'class-validator';
 
 class EnvironmentVariables {
   @IsString()
-  NODE_ENV: string;
+  @IsOptional()
+  NODE_ENV?: string;
 
   @IsNumber()
-  @Transform(({ value }) => parseInt(value, 10))
+  @Transform(({ value }) => {
+    if (value === undefined || value === null || value === '') {
+      return 3000; // Valor por defecto
+    }
+    const parsed = parseInt(value, 10);
+    return isNaN(parsed) ? 3000 : parsed;
+  })
   PORT: number;
 
   @IsString()
-  DB_HOST: string;
+  @IsOptional()
+  DB_HOST?: string;
 
   @IsNumber()
-  @Transform(({ value }) => parseInt(value, 10))
+  @Transform(({ value }) => {
+    if (value === undefined || value === null || value === '') {
+      return 5432; // Valor por defecto
+    }
+    const parsed = parseInt(value, 10);
+    return isNaN(parsed) ? 5432 : parsed;
+  })
   DB_PORT: number;
 
   @IsString()
-  DB_USERNAME: string;
+  @IsOptional()
+  DB_USERNAME?: string;
 
   @IsString()
-  DB_PASSWORD: string;
+  @IsOptional()
+  DB_PASSWORD?: string;
 
   @IsString()
-  DB_DATABASE: string;
+  @IsOptional()
+  DB_DATABASE?: string;
 
   @IsBoolean()
-  @Transform(({ value }) => value === 'true')
+  @Transform(({ value }) => {
+    if (value === undefined || value === null || value === '') {
+      return false;
+    }
+    return value === 'true' || value === true;
+  })
   DB_SYNCHRONIZE: boolean;
 
   @IsBoolean()
-  @Transform(({ value }) => value === 'true')
+  @Transform(({ value }) => {
+    if (value === undefined || value === null || value === '') {
+      return false;
+    }
+    return value === 'true' || value === true;
+  })
   DB_LOGGING: boolean;
 
   @IsBoolean()
-  @Transform(({ value }) => value === 'true')
+  @Transform(({ value }) => {
+    if (value === undefined || value === null || value === '') {
+      return false;
+    }
+    return value === 'true' || value === true;
+  })
   DB_MIGRATIONS_RUN: boolean;
 }
 
@@ -44,7 +76,7 @@ export function validate(config: Record<string, unknown>) {
   });
 
   const errors = validateSync(validatedConfig, {
-    skipMissingProperties: false,
+    skipMissingProperties: true,
   });
 
   if (errors.length > 0) {

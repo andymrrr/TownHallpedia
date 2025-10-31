@@ -17,6 +17,12 @@ export class CreateHeroeDto extends BaseDto {
   @IsString()
   @MaxLength(20)
   tipoRecurso?: string;
+
+  @ApiPropertyOptional({ description: 'URL de la imagen de portada', maxLength: 300 })
+  @IsOptional()
+  @IsString()
+  @MaxLength(300)
+  portada?: string;
 }
 
 export class UpdateHeroeDto {
@@ -47,6 +53,12 @@ export class UpdateHeroeDto {
   @IsString()
   @MaxLength(20)
   tipoRecurso?: string;
+
+  @ApiPropertyOptional({ description: 'URL de la imagen de portada', maxLength: 300 })
+  @IsOptional()
+  @IsString()
+  @MaxLength(300)
+  portada?: string;
 }
 
 export class HeroeResponseDto extends BaseDto {
@@ -56,4 +68,5 @@ export class HeroeResponseDto extends BaseDto {
   nombre: string;
   descripcion?: string;
   tipoRecurso?: string;
+  portada?: string;
 }

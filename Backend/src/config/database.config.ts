@@ -31,12 +31,11 @@ export const getDatabaseConfig = (configService: ConfigService): TypeOrmModuleOp
       min: 5,  // Mínimo de conexiones en el pool
       acquire: 30000, // Tiempo máximo para adquirir conexión
       idle: 10000,   // Tiempo máximo de inactividad
+      // Timeout de conexión para pg
+      connectionTimeoutMillis: 10000,
     },
     
     // Configuración de SSL para producción
     ssl: isProduction ? { rejectUnauthorized: false } : false,
-    
-    // Configuración de timeouts
-    connectTimeoutMS: 10000,
   };
 };

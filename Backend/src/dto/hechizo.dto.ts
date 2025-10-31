@@ -22,6 +22,12 @@ export class CreateHechizoDto extends BaseDto {
   @IsOptional()
   @IsString()
   descripcion?: string;
+
+  @ApiPropertyOptional({ description: 'URL de la imagen de portada', maxLength: 300 })
+  @IsOptional()
+  @IsString()
+  @MaxLength(300)
+  portada?: string;
 }
 
 export class UpdateHechizoDto {
@@ -62,6 +68,12 @@ export class UpdateHechizoDto {
   @IsOptional()
   @IsString()
   descripcion?: string;
+
+  @ApiPropertyOptional({ description: 'URL de la imagen de portada', maxLength: 300 })
+  @IsOptional()
+  @IsString()
+  @MaxLength(300)
+  portada?: string;
 }
 
 export class HechizoResponseDto extends BaseDto {
@@ -75,4 +87,6 @@ export class HechizoResponseDto extends BaseDto {
   espacioHechizo?: number;
 
   descripcion?: string;
+
+  portada?: string;
 }

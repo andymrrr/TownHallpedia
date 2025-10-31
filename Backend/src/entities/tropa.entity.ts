@@ -1,8 +1,6 @@
-import { Entity, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Edificio } from './edificio.entity';
-import { NivelDetalle } from './nivel-detalle.entity';
-import { DesbloqueosAyuntamiento } from './desbloqueos-ayuntamiento.entity';
 
 @Entity('tropa')
 export class Tropa extends BaseEntity {
@@ -18,16 +16,13 @@ export class Tropa extends BaseEntity {
   @Column({ name: 'descripcion', type: 'text', nullable: true })
   descripcion: string;
 
+  @Column({ name: 'portada', type: 'varchar', length: 300, nullable: true })
+  portada: string;
+
   @Column({ name: 'desbloquea_en_cuartel', type: 'int', nullable: true })
   desbloqueaEnCuartelId: number;
 
   @ManyToOne(() => Edificio, (edificio) => edificio.tropas)
   @JoinColumn({ name: 'desbloquea_en_cuartel' })
   desbloqueaEnCuartel: Edificio;
-
-  @OneToMany(() => NivelDetalle, (nivelDetalle) => nivelDetalle.entidadId)
-  nivelesDetalle: NivelDetalle[];
-
-  @OneToMany(() => DesbloqueosAyuntamiento, (desbloqueo) => desbloqueo.entidadId)
-  desbloqueos: DesbloqueosAyuntamiento[];
 }

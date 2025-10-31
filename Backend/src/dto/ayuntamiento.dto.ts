@@ -73,6 +73,14 @@ export class CreateAyuntamientoDto extends BaseDto {
   @IsOptional()
   @IsString()
   tipoRecurso?: string;
+
+  @ApiPropertyOptional({
+    description: 'URL de la imagen de portada',
+    maxLength: 300,
+  })
+  @IsOptional()
+  @IsString()
+  portada?: string;
 }
 
 export class UpdateAyuntamientoDto {
@@ -145,6 +153,14 @@ export class UpdateAyuntamientoDto {
   @IsOptional()
   @IsString()
   tipoRecurso?: string;
+
+  @ApiPropertyOptional({
+    description: 'URL de la imagen de portada',
+    maxLength: 300,
+  })
+  @IsOptional()
+  @IsString()
+  portada?: string;
 }
 
 export class AyuntamientoResponseDto extends BaseDto {
@@ -202,4 +218,9 @@ export class AyuntamientoResponseDto extends BaseDto {
     example: 'Oro',
   })
   tipoRecurso?: string;
+
+  @ApiPropertyOptional({
+    description: 'URL de la imagen de portada',
+  })
+  portada?: string;
 }

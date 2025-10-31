@@ -17,6 +17,12 @@ export class CreateEdificioDto extends BaseDto {
   @IsOptional()
   @IsString()
   descripcion?: string;
+
+  @ApiPropertyOptional({ description: 'URL de la imagen de portada', maxLength: 300 })
+  @IsOptional()
+  @IsString()
+  @MaxLength(300)
+  portada?: string;
 }
 
 export class UpdateEdificioDto {
@@ -47,6 +53,12 @@ export class UpdateEdificioDto {
   @IsOptional()
   @IsString()
   descripcion?: string;
+
+  @ApiPropertyOptional({ description: 'URL de la imagen de portada', maxLength: 300 })
+  @IsOptional()
+  @IsString()
+  @MaxLength(300)
+  portada?: string;
 }
 
 export class EdificioResponseDto extends BaseDto {
@@ -56,4 +68,5 @@ export class EdificioResponseDto extends BaseDto {
   nombre: string;
   tipo?: string;
   descripcion?: string;
+  portada?: string;
 }

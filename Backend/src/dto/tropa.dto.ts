@@ -23,6 +23,12 @@ export class CreateTropaDto extends BaseDto {
   @IsString()
   descripcion?: string;
 
+  @ApiPropertyOptional({ description: 'URL de la imagen de portada', maxLength: 300 })
+  @IsOptional()
+  @IsString()
+  @MaxLength(300)
+  portada?: string;
+
   @IsOptional()
   @IsNumber()
   @Min(1)
@@ -77,6 +83,12 @@ export class UpdateTropaDto {
   @IsNumber()
   @Min(1)
   desbloqueaEnCuartelId?: number;
+
+  @ApiPropertyOptional({ description: 'URL de la imagen de portada', maxLength: 300 })
+  @IsOptional()
+  @IsString()
+  @MaxLength(300)
+  portada?: string;
 }
 
 export class TropaResponseDto extends BaseDto {
@@ -93,4 +105,6 @@ export class TropaResponseDto extends BaseDto {
 
   @Type(() => Number)
   desbloqueaEnCuartelId?: number;
+
+  portada?: string;
 }

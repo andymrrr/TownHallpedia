@@ -1,7 +1,5 @@
-import { Entity, Column, OneToMany } from 'typeorm';
+import { Entity, Column } from 'typeorm';
 import { BaseEntity } from './base.entity';
-import { NivelDetalle } from './nivel-detalle.entity';
-import { DesbloqueosAyuntamiento } from './desbloqueos-ayuntamiento.entity';
 
 @Entity('heroe')
 export class Heroe extends BaseEntity {
@@ -14,9 +12,6 @@ export class Heroe extends BaseEntity {
   @Column({ name: 'tipo_recurso', type: 'varchar', length: 20, nullable: true })
   tipoRecurso: string;
 
-  @OneToMany(() => NivelDetalle, (nivelDetalle) => nivelDetalle.entidadId)
-  nivelesDetalle: NivelDetalle[];
-
-  @OneToMany(() => DesbloqueosAyuntamiento, (desbloqueo) => desbloqueo.entidadId)
-  desbloqueos: DesbloqueosAyuntamiento[];
+  @Column({ name: 'portada', type: 'varchar', length: 300, nullable: true })
+  portada: string;
 }

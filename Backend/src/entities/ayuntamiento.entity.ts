@@ -27,6 +27,9 @@ export class Ayuntamiento extends BaseEntity {
   @Column({ name: 'tipo_recurso', type: 'varchar', length: 20, nullable: true })
   tipoRecurso: string;
 
+  @Column({ name: 'portada', type: 'varchar', length: 300, nullable: true })
+  portada: string;
+
   @OneToMany(() => NivelDetalle, (nivelDetalle) => nivelDetalle.desbloqueaEnAyuntamiento)
   nivelesDetalle: NivelDetalle[];
 
