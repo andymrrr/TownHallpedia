@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Pressable, ViewStyle, View as RNView, Image, ImageSourcePropType } from 'react-native';
-import { Text } from '../Themed';
-import { useColorScheme } from '../useColorScheme';
+import { Text } from '@/components/Themed';
+import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
 import { FontAwesome } from '@expo/vector-icons';
 import { getTownHallImage, getPlaceholderImageUrl } from './townHallImages';
@@ -30,7 +30,7 @@ interface TownHallCardProps {
   style?: ViewStyle;
 }
 
-export default function TownHallCard({
+export function TownHallCard({
   nivel,
   capacidadOro,
   capacidadElixir,
@@ -63,17 +63,16 @@ export default function TownHallCard({
     return `${hours}h`;
   };
 
-  // Color del badge según el nivel (gradiente de colores)
   const getLevelColor = (nivel: number) => {
-    if (nivel <= 5) return '#4A90E2'; // Azul para niveles bajos
-    if (nivel <= 10) return '#FF6B35'; // Naranja para niveles medios
-    return '#FFD700'; // Dorado para niveles altos
+    if (nivel <= 5) return '#4A90E2';
+    if (nivel <= 10) return '#FF6B35';
+    return '#FFD700';
   };
 
   const levelColor = getLevelColor(nivel);
   const imageSource = imagenUrl 
     ? { uri: imagenUrl }
-    : getTownHallImage(nivel, imagenUrl) || { uri: getPlaceholderImageUrl(nivel) };
+    : (getTownHallImage(nivel, imagenUrl) as ImageSourcePropType) || { uri: getPlaceholderImageUrl(nivel) };
 
   return (
     <Pressable
@@ -92,7 +91,6 @@ export default function TownHallCard({
       ]}
     >
       <RNView style={styles.contentContainer}>
-        {/* Imagen del Ayuntamiento */}
         <RNView style={[styles.imageContainer, { backgroundColor: colors.background }]}>
           <Image
             source={imageSource}
@@ -102,7 +100,6 @@ export default function TownHallCard({
         </RNView>
 
         <RNView style={styles.infoContainer}>
-          {/* Header con badge y título */}
           <RNView style={styles.header}>
             <RNView style={[styles.levelBadge, { backgroundColor: levelColor + '20' }]}>
               <Text style={[styles.levelText, { color: levelColor }]}>TH{nivel}</Text>
@@ -112,12 +109,9 @@ export default function TownHallCard({
             </Text>
           </RNView>
 
-          {/* Información de capacidades */}
           {(capacidadOro || capacidadElixir || capacidadOscuro) && (
             <RNView style={styles.section}>
-              <Text style={[styles.sectionTitle, { color: colors.text + 'CC' }]}>
-                Capacidad de Almacenamiento
-              </Text>
+              <Text style={[styles.sectionTitle, { color: colors.text + 'CC' }]}>Capacidad de Almacenamiento</Text>
               <RNView style={styles.statsRow}>
                 {capacidadOro && (
                   <RNView style={styles.statItem}>
@@ -147,12 +141,9 @@ export default function TownHallCard({
             </RNView>
           )}
 
-          {/* Información de mejora */}
           {(costoMejora || tiempoConstruccion) && (
             <RNView style={styles.section}>
-              <Text style={[styles.sectionTitle, { color: colors.text + 'CC' }]}>
-                Información de Mejora
-              </Text>
+              <Text style={[styles.sectionTitle, { color: colors.text + 'CC' }]}>Información de Mejora</Text>
               <RNView style={styles.infoRow}>
                 {costoMejora && (
                   <RNView style={styles.infoItem}>
@@ -186,10 +177,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderWidth: 1,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
@@ -272,4 +260,5 @@ const styles = StyleSheet.create({
     fontSize: 11,
   },
 });
+
 

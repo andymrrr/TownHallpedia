@@ -3,6 +3,13 @@ import { Text } from '@/components/Themed';
 import { AppHeader } from '@/components/common';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
+import { SpellCard } from '@/features/hechizos/components';
+
+export const options = {
+  title: 'Hechizos',
+  tabBarLabel: 'Hechizos',
+  headerShown: false,
+};
 
 export default function HechizosScreen() {
   const colorScheme = useColorScheme();
@@ -19,13 +26,31 @@ export default function HechizosScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.content}>
-          <Text style={[styles.title, { color: colors.text }]}>
-            🔮 Hechizos
-          </Text>
-          <Text style={[styles.description, { color: colors.text + 'CC' }]}>
-            Próximamente: Descubre todos los hechizos disponibles
-          </Text>
+        <View style={styles.list}>
+          <SpellCard
+            nombre="Rayo"
+            tipo="Elixir"
+            nivelRequerido={5}
+            costoMejora={12000}
+            tiempoMejoraHoras={12}
+            descripcion="Inflige daño instantáneo a edificios y tropas enemigas."
+          />
+          <SpellCard
+            nombre="Curación"
+            tipo="Elixir"
+            nivelRequerido={6}
+            costoMejora={16000}
+            tiempoMejoraHoras={14}
+            descripcion="Crea un área que regenera vida a tus tropas."
+          />
+          <SpellCard
+            nombre="Veneno"
+            tipo="Oscuro"
+            nivelRequerido={8}
+            costoMejora={24000}
+            tiempoMejoraHoras={18}
+            descripcion="Reduce velocidad y vida de tropas enemigas en el área."
+          />
         </View>
       </ScrollView>
     </View>
@@ -44,10 +69,8 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 40,
   },
-  content: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 200,
+  list: {
+    gap: 12,
   },
   title: {
     fontSize: 24,

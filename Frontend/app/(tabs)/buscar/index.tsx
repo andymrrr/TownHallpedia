@@ -4,12 +4,24 @@ import { AppHeader } from '@/components/common';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
 import { FontAwesome } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { BuscarViewModel } from '@/features/buscar/viewModels';
+
+export const options = {
+  title: 'Buscar',
+  tabBarLabel: 'Buscar',
+  headerShown: false,
+};
 
 export default function BuscarScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const [searchText, setSearchText] = useState('');
+  const viewModel = useMemo(() => {
+    const vm = new BuscarViewModel();
+    vm.setSearchQuery(searchText);
+    return vm;
+  }, [searchText]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -44,9 +56,9 @@ export default function BuscarScreen() {
         </View>
 
         <View style={styles.content}>
-          {searchText ? (
+          {viewModel.hasQuery() ? (
             <Text style={[styles.description, { color: colors.text + 'CC' }]}>
-              Resultados para: "{searchText}"
+              Resultados para: "{viewModel.searchQuery}"
             </Text>
           ) : (
             <>

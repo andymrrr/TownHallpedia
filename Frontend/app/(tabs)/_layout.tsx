@@ -29,41 +29,39 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="ayuntamientos/index"
         options={{
           title: 'Ayuntamientos',
+          tabBarLabel: 'Ayuntamientos',
           tabBarIcon: ({ color }) => <TabBarIcon name="building" color={color} />,
           headerShown: false,
         }}
       />
       <Tabs.Screen
-        name="heroes"
+        name="heroes/index"
         options={{
           title: 'Héroes',
+          tabBarLabel: 'Héroes',
           tabBarIcon: ({ color }) => <TabBarIcon name="star" color={color} />,
           headerShown: false,
         }}
       />
       <Tabs.Screen
-        name="hechizos"
+        name="hechizos/index"
         options={{
           title: 'Hechizos',
+          tabBarLabel: 'Hechizos',
           tabBarIcon: ({ color }) => <TabBarIcon name="magic" color={color} />,
           headerShown: false,
         }}
       />
       <Tabs.Screen
-        name="buscar"
+        name="buscar/index"
         options={{
           title: 'Buscar',
+          tabBarLabel: 'Buscar',
           tabBarIcon: ({ color }) => <TabBarIcon name="search" color={color} />,
           headerShown: false,
-        }}
-      />
-      <Tabs.Screen
-        name="two"
-        options={{
-          href: null,
         }}
       />
     </Tabs>
