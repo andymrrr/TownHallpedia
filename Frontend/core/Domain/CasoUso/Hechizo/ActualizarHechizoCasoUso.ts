@@ -16,11 +16,7 @@ export class ActualizarHechizoCasoUso {
   async ejecutar(id: number, updateDto: UpdateHechizo): Promise<Respuesta<Hechizo>> {
     try {
       const resultado = await this._hechizoService.update(id, updateDto);
-
-      if (!resultado.completado) {
-        throw new Error(`Error al actualizar hechizo: ${resultado.mensaje}`);
-      }
-
+      // Sin condiciones: devolvemos el resultado tal cual
       return resultado;
     } catch (error) {
       console.error('Error en ActualizarHechizoCasoUso:', error);

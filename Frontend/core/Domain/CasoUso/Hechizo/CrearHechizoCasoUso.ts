@@ -16,11 +16,7 @@ export class CrearHechizoCasoUso {
   async ejecutar(createDto: CreateHechizo): Promise<Respuesta<Hechizo>> {
     try {
       const resultado = await this._hechizoService.create(createDto);
-
-      if (!resultado.completado) {
-        throw new Error(`Error al crear hechizo: ${resultado.mensaje}`);
-      }
-
+      // Devolvemos el resultado sin lanzar excepciones
       return resultado;
     } catch (error) {
       console.error('Error en CrearHechizoCasoUso:', error);

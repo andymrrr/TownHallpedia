@@ -15,11 +15,7 @@ export class ObtenerHechizosCasoUso {
   async ejecutar(): Promise<Respuesta<Hechizo[]>> {
     try {
       const resultado = await this._hechizoService.findAll();
-
-      if (!resultado.completado) {
-        throw new Error(`Error al obtener hechizos: ${resultado.mensaje}`);
-      }
-
+      // Siempre devolvemos el resultado tal cual, sin lanzar excepciones
       return resultado;
     } catch (error) {
       console.error('Error en ObtenerHechizosCasoUso:', error);

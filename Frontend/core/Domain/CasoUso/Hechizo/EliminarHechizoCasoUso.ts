@@ -14,11 +14,7 @@ export class EliminarHechizoCasoUso {
   async ejecutar(id: number): Promise<Respuesta<void>> {
     try {
       const resultado = await this._hechizoService.delete(id);
-
-      if (!resultado.completado) {
-        throw new Error(`Error al eliminar hechizo: ${resultado.mensaje}`);
-      }
-
+      // Retorno directo
       return resultado;
     } catch (error) {
       console.error('Error en EliminarHechizoCasoUso:', error);

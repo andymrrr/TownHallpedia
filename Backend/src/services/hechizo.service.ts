@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { PaginationQueryDto, PageDto } from '../common/pagination/pagination.dto';
+import { paginateQueryBuilder } from '../common/pagination/paginate-typeorm';
 import { Hechizo } from '../entities/hechizo.entity';
 import { BaseService } from './base.service';
 import { CreateHechizoDto, UpdateHechizoDto } from '../dto/hechizo.dto';
@@ -35,6 +37,14 @@ export class HechizoService extends BaseService<Hechizo> {
       where: { id } as any,
       relations: ['nivelesDetalle', 'desbloqueos'],
     });
+  }
+
+  async paginate(query: PaginationQueryDto): Promise<PageDto<Hechizo>> {
+    const qb = this.hechizoRepository.createQueryBuilder('h');
+    if (query.search) {
+      qb.andWhere('h.nombre LIKE :s', { s: `%${query.search}%` });
+    }
+    return paginateQueryBuilder(qb, query, [['h.id', 'DESC']]);
   }
 
   async createHechizo(createDto: CreateHechizoDto): Promise<Hechizo> {

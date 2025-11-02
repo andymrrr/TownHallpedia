@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { PaginationQueryDto, PageDto } from '../common/pagination/pagination.dto';
+import { paginateQueryBuilder } from '../common/pagination/paginate-typeorm';
 import { NivelDetalle, TipoEntidad } from '../entities/nivel-detalle.entity';
 import { BaseService } from './base.service';
 import { CreateNivelDetalleDto, UpdateNivelDetalleDto } from '../dto/nivel-detalle.dto';
@@ -39,6 +41,14 @@ export class NivelDetalleService extends BaseService<NivelDetalle> {
       where: { id } as any,
       relations: ['desbloqueaEnAyuntamiento'],
     });
+  }
+
+  async paginate(query: PaginationQueryDto): Promise<PageDto<NivelDetalle>> {
+    const qb = this.nivelDetalleRepository.createQueryBuilder('n');
+    if (query.search) {
+      qb.andWhere('CAST(n.nivel as text) LIKE :s OR CAST(n.entidadId as text) LIKE :s', { s: `%${query.search}%` });
+    }
+    return paginateQueryBuilder(qb, query, [['n.id', 'DESC']]);
   }
 
   async createNivelDetalle(createDto: CreateNivelDetalleDto): Promise<NivelDetalle> {

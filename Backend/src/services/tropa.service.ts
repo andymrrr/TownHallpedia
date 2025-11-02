@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { PaginationQueryDto, PageDto } from '../common/pagination/pagination.dto';
+import { paginateQueryBuilder } from '../common/pagination/paginate-typeorm';
 import { Tropa } from '../entities/tropa.entity';
 import { BaseService } from './base.service';
 import { CreateTropaDto, UpdateTropaDto } from '../dto/tropa.dto';
@@ -36,6 +38,14 @@ export class TropaService extends BaseService<Tropa> {
       where: { id } as any,
       relations: ['desbloqueaEnCuartel', 'nivelesDetalle', 'desbloqueos'],
     });
+  }
+
+  async paginate(query: PaginationQueryDto): Promise<PageDto<Tropa>> {
+    const qb = this.tropaRepository.createQueryBuilder('t');
+    if (query.search) {
+      qb.andWhere('t.nombre LIKE :s', { s: `%${query.search}%` });
+    }
+    return paginateQueryBuilder(qb, query, [['t.id', 'DESC']]);
   }
 
   async createTropa(createDto: CreateTropaDto): Promise<Tropa> {

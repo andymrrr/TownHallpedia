@@ -15,11 +15,7 @@ export class ObtenerHechizoPorIdCasoUso {
   async ejecutar(id: number): Promise<Respuesta<Hechizo>> {
     try {
       const resultado = await this._hechizoService.findOne(id);
-
-      if (!resultado.completado) {
-        throw new Error(`Error al obtener hechizo: ${resultado.mensaje}`);
-      }
-
+      // Sin if redundante
       return resultado;
     } catch (error) {
       console.error('Error en ObtenerHechizoPorIdCasoUso:', error);

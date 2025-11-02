@@ -15,11 +15,7 @@ export class ObtenerHechizosPorEspacioHechizoCasoUso {
   async ejecutar(espacioHechizo: number): Promise<Respuesta<Hechizo[]>> {
     try {
       const resultado = await this._hechizoService.findByEspacioHechizo(espacioHechizo);
-
-      if (!resultado.completado) {
-        throw new Error(`Error al obtener hechizos por espacio de hechizo: ${resultado.mensaje}`);
-      }
-
+      // Retorno directo
       return resultado;
     } catch (error) {
       console.error('Error en ObtenerHechizosPorEspacioHechizoCasoUso:', error);

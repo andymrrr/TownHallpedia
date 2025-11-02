@@ -15,11 +15,7 @@ export class ObtenerHechizosPorTipoCasoUso {
   async ejecutar(tipo: string): Promise<Respuesta<Hechizo[]>> {
     try {
       const resultado = await this._hechizoService.findByTipo(tipo);
-
-      if (!resultado.completado) {
-        throw new Error(`Error al obtener hechizos por tipo: ${resultado.mensaje}`);
-      }
-
+      // Retornamos directamente
       return resultado;
     } catch (error) {
       console.error('Error en ObtenerHechizosPorTipoCasoUso:', error);

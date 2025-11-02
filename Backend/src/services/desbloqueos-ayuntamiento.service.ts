@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { PaginationQueryDto, PageDto } from '../common/pagination/pagination.dto';
+import { paginateQueryBuilder } from '../common/pagination/paginate-typeorm';
 import { DesbloqueosAyuntamiento } from '../entities/desbloqueos-ayuntamiento.entity';
 import { TipoEntidad } from '../entities/nivel-detalle.entity';
 import { BaseService } from './base.service';
@@ -45,6 +47,14 @@ export class DesbloqueosAyuntamientoService extends BaseService<DesbloqueosAyunt
       where: { id } as any,
       relations: ['ayuntamiento'],
     });
+  }
+
+  async paginate(query: PaginationQueryDto): Promise<PageDto<DesbloqueosAyuntamiento>> {
+    const qb = this.desbloqueosRepository.createQueryBuilder('d');
+    if (query.search) {
+      qb.andWhere('(CAST(d.ayuntamientoId as text) LIKE :s OR CAST(d.entidadId as text) LIKE :s)', { s: `%${query.search}%` });
+    }
+    return paginateQueryBuilder(qb, query, [['d.id', 'DESC']]);
   }
 
   async createDesbloqueo(createDto: CreateDesbloqueosAyuntamientoDto): Promise<DesbloqueosAyuntamiento> {

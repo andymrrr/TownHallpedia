@@ -1,5 +1,6 @@
 import { Api } from '../configuracion';
 import { Respuesta } from '@/core/Domain/Model/Comun/Respuesta';
+import { PageDto, PaginationQueryDto } from '@/core/Domain/Model/Comun/Pagination';
 import { Ayuntamiento, CreateAyuntamiento, UpdateAyuntamiento } from '@/core/Domain/Model/Ayuntamiento';
 import { IAyuntamientoService } from '../Interfaz/IAyuntamientoService';
 import { mapErrorARespuesta } from '@/utils/Api/ManejoErrores';
@@ -55,6 +56,19 @@ export class AyuntamientoService implements IAyuntamientoService {
       };
     } catch (error: any) {
       return mapErrorARespuesta<Ayuntamiento>(error, 'obtener ayuntamiento con desbloqueos', 'AYUNTAMIENTO');
+    }
+  }
+
+  async paginate(query: PaginationQueryDto): Promise<Respuesta<PageDto<Ayuntamiento>>> {
+    try {
+      const url = `${this.baseUrl}/paginacion`;
+      const response = await Api.get<PageDto<Ayuntamiento>>(url, { params: query });
+      return {
+        completado: true,
+        datos: response.data
+      };
+    } catch (error: any) {
+      return mapErrorARespuesta<PageDto<Ayuntamiento>>(error, 'paginar ayuntamientos', 'AYUNTAMIENTO');
     }
   }
 

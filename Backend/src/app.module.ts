@@ -15,6 +15,7 @@ import {
   NivelDetalleModule,
   DesbloqueosAyuntamientoModule,
 } from './modules';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import {
     HechizoModule,
     NivelDetalleModule,
     DesbloqueosAyuntamientoModule,
+    SeedModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -10,6 +10,7 @@ import {
   HttpStatus,
   HttpCode,
   Query,
+  UsePipes,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -29,6 +30,9 @@ import {
   AyuntamientoResponseDto,
 } from '../dto/ayuntamiento.dto';
 import { plainToClass } from 'class-transformer';
+import { PaginationPipe } from '../common/pagination/pagination.pipe';
+import { PageDto, PaginationQueryDto } from '../common/pagination/pagination.dto';
+import { Respuesta, ok, fail } from '../common/respuesta/respuesta';
 
 @ApiTags('Ayuntamientos')
 @Controller('ayuntamientos')
@@ -41,11 +45,25 @@ export class AyuntamientoController {
     description: 'Lista de ayuntamientos obtenida exitosamente',
     type: [AyuntamientoResponseDto],
   })
-  async findAll(): Promise<AyuntamientoResponseDto[]> {
-    const ayuntamientos = await this.ayuntamientoService.findAll();
-    return ayuntamientos.map(ayuntamiento => 
-      plainToClass(AyuntamientoResponseDto, ayuntamiento, { excludeExtraneousValues: true })
-    );
+  async findAll(): Promise<Respuesta<any[]>> {
+    try {
+      const ayuntamientos = await this.ayuntamientoService.findAll();
+      return ok<any[]>(ayuntamientos);
+    } catch (error: any) {
+      return fail<any[]>('Error al obtener ayuntamientos', { errorTecnico: error?.message, tipoError: 'AYUNTAMIENTO' });
+    }
+  }
+
+  @Get('paginacion')
+  @ApiOperation({ summary: 'Paginación de ayuntamientos' })
+  @UsePipes(new PaginationPipe())
+  async paginar(@Query() query: PaginationQueryDto): Promise<Respuesta<PageDto<any>>> {
+    try {
+      const page = await this.ayuntamientoService.paginate(query);
+      return ok<PageDto<any>>(page);
+    } catch (error: any) {
+      return fail<PageDto<any>>('Error al paginar ayuntamientos', { errorTecnico: error?.message, tipoError: 'AYUNTAMIENTO' });
+    }
   }
 
   @Get(':id')
@@ -56,12 +74,16 @@ export class AyuntamientoController {
     type: AyuntamientoResponseDto,
   })
   @ApiNotFoundResponse({ description: 'Ayuntamiento no encontrado' })
-  async findOne(@Param('id', ParseIntPipe) id: number): Promise<AyuntamientoResponseDto> {
-    const ayuntamiento = await this.ayuntamientoService.findOne(id);
-    if (!ayuntamiento) {
-      throw new Error('Ayuntamiento no encontrado');
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<any>> {
+    try {
+      const ayuntamiento = await this.ayuntamientoService.findOne(id);
+      if (!ayuntamiento) {
+        return fail<any>('Ayuntamiento no encontrado', { tipoError: 'AYUNTAMIENTO' });
+      }
+      return ok<any>(ayuntamiento);
+    } catch (error: any) {
+      return fail<any>('Error al obtener ayuntamiento', { errorTecnico: error?.message, tipoError: 'AYUNTAMIENTO' });
     }
-    return plainToClass(AyuntamientoResponseDto, ayuntamiento, { excludeExtraneousValues: true });
   }
 
   @Get('nivel/:nivel')
@@ -72,12 +94,16 @@ export class AyuntamientoController {
     type: AyuntamientoResponseDto,
   })
   @ApiNotFoundResponse({ description: 'Ayuntamiento no encontrado' })
-  async findByNivel(@Param('nivel', ParseIntPipe) nivel: number): Promise<AyuntamientoResponseDto> {
-    const ayuntamiento = await this.ayuntamientoService.findByNivel(nivel);
-    if (!ayuntamiento) {
-      throw new Error('Ayuntamiento no encontrado');
+  async findByNivel(@Param('nivel', ParseIntPipe) nivel: number): Promise<Respuesta<any>> {
+    try {
+      const ayuntamiento = await this.ayuntamientoService.findByNivel(nivel);
+      if (!ayuntamiento) {
+        return fail<any>('Ayuntamiento no encontrado', { tipoError: 'AYUNTAMIENTO' });
+      }
+      return ok<any>(ayuntamiento);
+    } catch (error: any) {
+      return fail<any>('Error al obtener ayuntamiento por nivel', { errorTecnico: error?.message, tipoError: 'AYUNTAMIENTO' });
     }
-    return plainToClass(AyuntamientoResponseDto, ayuntamiento, { excludeExtraneousValues: true });
   }
 
   @Get(':id/desbloqueos')
@@ -88,12 +114,16 @@ export class AyuntamientoController {
     type: AyuntamientoResponseDto,
   })
   @ApiNotFoundResponse({ description: 'Ayuntamiento no encontrado' })
-  async findWithDesbloqueos(@Param('id', ParseIntPipe) id: number): Promise<AyuntamientoResponseDto> {
-    const ayuntamiento = await this.ayuntamientoService.findWithDesbloqueos(id);
-    if (!ayuntamiento) {
-      throw new Error('Ayuntamiento no encontrado');
+  async findWithDesbloqueos(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<any>> {
+    try {
+      const ayuntamiento = await this.ayuntamientoService.findWithDesbloqueos(id);
+      if (!ayuntamiento) {
+        return fail<any>('Ayuntamiento no encontrado', { tipoError: 'AYUNTAMIENTO' });
+      }
+      return ok<any>(ayuntamiento);
+    } catch (error: any) {
+      return fail<any>('Error al obtener ayuntamiento con desbloqueos', { errorTecnico: error?.message, tipoError: 'AYUNTAMIENTO' });
     }
-    return plainToClass(AyuntamientoResponseDto, ayuntamiento, { excludeExtraneousValues: true });
   }
 
   @Post()
@@ -105,9 +135,13 @@ export class AyuntamientoController {
     type: AyuntamientoResponseDto,
   })
   @ApiBadRequestResponse({ description: 'Datos de entrada inválidos' })
-  async create(@Body() createDto: CreateAyuntamientoDto): Promise<AyuntamientoResponseDto> {
-    const ayuntamiento = await this.ayuntamientoService.createAyuntamiento(createDto);
-    return plainToClass(AyuntamientoResponseDto, ayuntamiento, { excludeExtraneousValues: true });
+  async create(@Body() createDto: CreateAyuntamientoDto): Promise<Respuesta<any>> {
+    try {
+      const ayuntamiento = await this.ayuntamientoService.createAyuntamiento(createDto);
+      return ok<any>(ayuntamiento, 'Creado exitosamente');
+    } catch (error: any) {
+      return fail<any>('Error al crear ayuntamiento', { errorTecnico: error?.message, tipoError: 'AYUNTAMIENTO' });
+    }
   }
 
   @Put(':id')
@@ -123,12 +157,16 @@ export class AyuntamientoController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateDto: UpdateAyuntamientoDto,
-  ): Promise<AyuntamientoResponseDto> {
-    const ayuntamiento = await this.ayuntamientoService.updateAyuntamiento(id, updateDto);
-    if (!ayuntamiento) {
-      throw new Error('Ayuntamiento no encontrado');
+  ): Promise<Respuesta<any>> {
+    try {
+      const ayuntamiento = await this.ayuntamientoService.updateAyuntamiento(id, updateDto);
+      if (!ayuntamiento) {
+        return fail<any>('Ayuntamiento no encontrado', { tipoError: 'AYUNTAMIENTO' });
+      }
+      return ok<any>(ayuntamiento, 'Actualizado exitosamente');
+    } catch (error: any) {
+      return fail<any>('Error al actualizar ayuntamiento', { errorTecnico: error?.message, tipoError: 'AYUNTAMIENTO' });
     }
-    return plainToClass(AyuntamientoResponseDto, ayuntamiento, { excludeExtraneousValues: true });
   }
 
   @Delete(':id')
@@ -137,10 +175,15 @@ export class AyuntamientoController {
   @ApiParam({ name: 'id', description: 'ID del ayuntamiento', type: 'integer' })
   @ApiResponse({ status: 204, description: 'Ayuntamiento eliminado exitosamente' })
   @ApiNotFoundResponse({ description: 'Ayuntamiento no encontrado' })
-  async delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
-    const deleted = await this.ayuntamientoService.delete(id);
-    if (!deleted) {
-      throw new Error('Ayuntamiento no encontrado');
+  async delete(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<void>> {
+    try {
+      const deleted = await this.ayuntamientoService.delete(id);
+      if (!deleted) {
+        return fail<void>('Ayuntamiento no encontrado', { tipoError: 'AYUNTAMIENTO' });
+      }
+      return ok<void>(undefined, 'Eliminado exitosamente');
+    } catch (error: any) {
+      return fail<void>('Error al eliminar ayuntamiento', { errorTecnico: error?.message, tipoError: 'AYUNTAMIENTO' });
     }
   }
 }

@@ -15,11 +15,7 @@ export class ObtenerHechizoConRelacionesCasoUso {
   async ejecutar(id: number): Promise<Respuesta<Hechizo>> {
     try {
       const resultado = await this._hechizoService.findWithRelations(id);
-
-      if (!resultado.completado) {
-        throw new Error(`Error al obtener hechizo con relaciones: ${resultado.mensaje}`);
-      }
-
+      // Retorno directo
       return resultado;
     } catch (error) {
       console.error('Error en ObtenerHechizoConRelacionesCasoUso:', error);

@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { PaginationQueryDto, PageDto } from '../common/pagination/pagination.dto';
+import { paginateQueryBuilder } from '../common/pagination/paginate-typeorm';
 import { Edificio } from '../entities/edificio.entity';
 import { BaseService } from './base.service';
 import { CreateEdificioDto, UpdateEdificioDto } from '../dto/edificio.dto';
@@ -29,6 +31,14 @@ export class EdificioService extends BaseService<Edificio> {
       where: { id } as any,
       relations: ['tropas', 'nivelesDetalle', 'desbloqueos'],
     });
+  }
+
+  async paginate(query: PaginationQueryDto): Promise<PageDto<Edificio>> {
+    const qb = this.edificioRepository.createQueryBuilder('e');
+    if (query.search) {
+      qb.andWhere('e.nombre LIKE :s', { s: `%${query.search}%` });
+    }
+    return paginateQueryBuilder(qb, query, [['e.id', 'DESC']]);
   }
 
   async createEdificio(createDto: CreateEdificioDto): Promise<Edificio> {
