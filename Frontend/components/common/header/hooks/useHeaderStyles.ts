@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useColorScheme } from '../../useColorScheme';
+import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
 import { HeaderVariant } from '../types';
 import { HEADER_VARIANT_STYLES, COMPACT_HEADER_PADDING } from '../constants';
@@ -16,7 +16,6 @@ export const useHeaderStyles = (variant: HeaderVariant = 'default') => {
   const containerStyles = useMemo(
     () => ({
       backgroundColor: colors.background,
-      // El SafeAreaView ya maneja el padding superior, solo necesitamos padding interno
       paddingTop: variant === 'compact' ? COMPACT_HEADER_PADDING.top : variantStyles.paddingVertical,
       paddingBottom:
         variant === 'compact'
@@ -42,4 +41,3 @@ export const useHeaderStyles = (variant: HeaderVariant = 'default') => {
     textStyles,
   };
 };
-

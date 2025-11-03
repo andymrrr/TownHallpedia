@@ -40,4 +40,3 @@ const styles = StyleSheet.create({
     borderRadius: 17,
   },
 });
-

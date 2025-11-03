@@ -1,16 +1,12 @@
 import React from 'react';
-import { StyleSheet, ViewStyle, View as RNView } from 'react-native';
-import { View } from '../Themed';
-import { BaseHeaderProps } from './types';
-import { useHeaderStyles } from './hooks';
-import { BACK_BUTTON_SIZE, BACK_ICON_SIZE } from './constants';
-import { HeaderContent } from './components/HeaderContent';
-import { HeaderBackButton } from './components/HeaderBackButton';
+import { StyleSheet, View as RNView } from 'react-native';
+import { View } from '../../Themed';
+import { BaseHeaderProps } from '@/components/common/header/interfaces';
+import { useHeaderStyles } from './hooks/useHeaderStyles';
+import { BACK_BUTTON_SIZE, BACK_ICON_SIZE } from '@/components/common/header/constants';
+import { HeaderContent } from './components';
+import { HeaderBackButton } from './components';
 
-/**
- * Header simple sin SafeAreaView
- * Útil cuando ya estás dentro de un SafeAreaView o en contextos específicos
- */
 export default function Header({
   title,
   subtitle,

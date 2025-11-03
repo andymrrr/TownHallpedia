@@ -1,4 +1,5 @@
-import { HeaderVariant, HeaderVariantStyles } from './types';
+import { HeaderVariant } from './types';
+import { HeaderVariantStyles } from './interfaces';
 
 export const HEADER_VARIANT_STYLES: Record<HeaderVariant, HeaderVariantStyles> = {
   compact: {
@@ -27,4 +28,3 @@ export const BACK_BUTTON_SIZE = 34;
 export const TITLE_ICON_SIZE = 18;
 export const BACK_ICON_SIZE = 22;
 export const TITLE_ICON_MARGIN = 8;
-

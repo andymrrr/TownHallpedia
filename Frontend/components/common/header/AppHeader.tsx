@@ -1,19 +1,12 @@
 import React from 'react';
-import { StyleSheet, ViewStyle, View as RNView, Pressable } from 'react-native';
+import { StyleSheet, View as RNView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Text } from '../Themed';
-import { FontAwesome } from '@expo/vector-icons';
-import { AppHeaderProps } from './types';
-import { useHeaderStyles } from './hooks';
-import { BACK_BUTTON_SIZE, TITLE_ICON_SIZE, BACK_ICON_SIZE, TITLE_ICON_MARGIN } from './constants';
-import { HeaderContent } from './components/HeaderContent';
-import { HeaderBackButton } from './components/HeaderBackButton';
+import { AppHeaderProps } from '@/components/common/header/interfaces';
+import { useHeaderStyles } from './hooks/useHeaderStyles';
+import { BACK_BUTTON_SIZE, TITLE_ICON_SIZE, BACK_ICON_SIZE } from '@/components/common/header/constants';
+import { HeaderContent } from './components';
+import { HeaderBackButton } from './components';
 
-/**
- * Header principal de la aplicación TownHallpedia
- * Incluye SafeAreaView para manejar correctamente el área segura del dispositivo
- * Diseñado para ser usado en toda la app con diferentes variantes
- */
 export default function AppHeader({
   title,
   subtitle,

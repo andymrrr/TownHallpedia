@@ -1,13 +1,6 @@
 import { ReactNode } from 'react';
 import { ViewStyle } from 'react-native';
-
-export type HeaderVariant = 'default' | 'compact' | 'large';
-
-export interface HeaderVariantStyles {
-  titleSize: number;
-  subtitleSize: number;
-  paddingVertical: number;
-}
+import { HeaderVariant } from '../types';
 
 export interface BaseHeaderProps {
   title: string;
@@ -19,7 +12,4 @@ export interface BaseHeaderProps {
   style?: ViewStyle;
 }
 
-export interface AppHeaderProps extends BaseHeaderProps {
-  centered?: boolean;
-}
 

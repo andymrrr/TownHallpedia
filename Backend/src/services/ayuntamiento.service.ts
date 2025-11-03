@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { PaginationQueryDto, PageDto } from '../common/pagination/pagination.dto';
-import { paginateQueryBuilder } from '../common/pagination/paginate-typeorm';
+import { PaginationQueryDto, PaginationVm } from '../common/pagination/pagination.dto';
+import { paginateVmQueryBuilder } from '../common/pagination/paginate-typeorm';
 import { Ayuntamiento } from '../entities/ayuntamiento.entity';
 import { BaseService } from './base.service';
 import { CreateAyuntamientoDto, UpdateAyuntamientoDto } from '../dto/ayuntamiento.dto';
@@ -33,14 +33,14 @@ export class AyuntamientoService extends BaseService<Ayuntamiento> {
     });
   }
 
-  async paginate(query: PaginationQueryDto): Promise<PageDto<Ayuntamiento>> {
+  async paginate(query: PaginationQueryDto): Promise<PaginationVm<Ayuntamiento>> {
     const qb = this.ayuntamientoRepository.createQueryBuilder('a');
 
     if (query.search) {
       qb.andWhere('a.nombre LIKE :s', { s: `%${query.search}%` });
     }
 
-    return paginateQueryBuilder(qb, query, [['a.id', 'DESC']]);
+    return paginateVmQueryBuilder(qb, query, [['a.id', 'DESC']]);
   }
 
   async createAyuntamiento(createDto: CreateAyuntamientoDto): Promise<Ayuntamiento> {

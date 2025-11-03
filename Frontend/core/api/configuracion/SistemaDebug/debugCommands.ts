@@ -115,8 +115,7 @@ export class DebugCommands {
 
 export function initializeDebugCommands(debugInstance: any, debugAPI: any) {
   try {
-    const { Debug } = require('./debugSystem');
-    if (typeof window !== 'undefined' && Debug?.isDebugEnabled()) {
+    if (typeof window !== 'undefined' && debugInstance?.isDebugEnabled()) {
       const originalConfigure = debugInstance.configure.bind(debugInstance);
       Object.assign(debugInstance, {
         stats: () => DebugCommands.stats(debugInstance),

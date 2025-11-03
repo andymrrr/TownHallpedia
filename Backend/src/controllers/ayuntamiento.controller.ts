@@ -8,6 +8,7 @@ import {
   Param,
   ParseIntPipe,
   HttpStatus,
+  HttpException,
   HttpCode,
   Query,
   UsePipes,
@@ -31,8 +32,9 @@ import {
 } from '../dto/ayuntamiento.dto';
 import { plainToClass } from 'class-transformer';
 import { PaginationPipe } from '../common/pagination/pagination.pipe';
-import { PageDto, PaginationQueryDto } from '../common/pagination/pagination.dto';
+import { PaginationQueryDto } from '../common/pagination/pagination.dto';
 import { Respuesta, ok, fail } from '../common/respuesta/respuesta';
+import { Ayuntamiento } from '../entities/ayuntamiento.entity';
 
 @ApiTags('Ayuntamientos')
 @Controller('ayuntamientos')
@@ -57,13 +59,21 @@ export class AyuntamientoController {
   @Get('paginacion')
   @ApiOperation({ summary: 'Paginación de ayuntamientos' })
   @UsePipes(new PaginationPipe())
-  async paginar(@Query() query: PaginationQueryDto): Promise<Respuesta<PageDto<any>>> {
+  async paginar(@Query() query: PaginationQueryDto): ReturnType<AyuntamientoService['paginate']> {
     try {
       console.log('query', query);
-      const page = await this.ayuntamientoService.paginate(query);
-      return ok<PageDto<any>>(page);
-    } catch (error: any) {
-      return fail<PageDto<any>>('Error al paginar ayuntamientos', { errorTecnico: error?.message, tipoError: 'AYUNTAMIENTO' });
+      const resultado = await this.ayuntamientoService.paginate(query);
+      return resultado;
+    } catch (error: unknown) {
+      const mensajeTecnico = error instanceof Error ? error.message : String(error);
+      throw new HttpException(
+        {
+          Mensaje: 'Error al paginar ayuntamientos',
+          TipoError: 'AYUNTAMIENTO',
+          ErrorTecnico: mensajeTecnico,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 

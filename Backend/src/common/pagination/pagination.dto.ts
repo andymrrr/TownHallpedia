@@ -46,3 +46,21 @@ export class PageDto<T> {
 }
 
 
+// ViewModel compatible con el contrato esperado estilo PaginacionVm de C#
+export interface PaginationVm<T> {
+  Datos: T[];
+  TotalRegistros: number;
+  PaginaActual: number;
+  CantidadRegistroPorPagina: number;
+}
+
+export function toPaginationVm<T>(page: PageDto<T>): PaginationVm<T> {
+  return {
+    Datos: page.data,
+    TotalRegistros: page.meta.totalItems ?? page.data.length,
+    PaginaActual: page.meta.page,
+    CantidadRegistroPorPagina: page.meta.limit,
+  };
+}
+
+

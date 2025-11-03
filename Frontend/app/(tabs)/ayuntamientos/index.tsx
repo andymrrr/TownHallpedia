@@ -1,6 +1,7 @@
 import { StyleSheet, ScrollView, View } from 'react-native';
 import { Text } from '@/components/Themed';
-import { AppHeader } from '@/components/common';
+import AppHeader from '@/components/common/header/AppHeader';
+import { LoadingState, ErrorState } from '@/components/common/states';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
 import { TownHallCard } from '@/features/ayuntamientos/components';
@@ -21,9 +22,7 @@ export default function AyuntamientosScreen() {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <AppHeader title="TownHallpedia" variant="compact" />
-        <View style={styles.centerContent}>
-          <Text style={{ color: colors.text }}>Cargando...</Text>
-        </View>
+        <LoadingState />
       </View>
     );
   }
@@ -32,9 +31,12 @@ export default function AyuntamientosScreen() {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <AppHeader title="TownHallpedia" variant="compact" />
-        <View style={styles.centerContent}>
-          <Text style={{ color: colors.text }}>Error al cargar ayuntamientos</Text>
-        </View>
+        <ErrorState
+          title="Error al cargar ayuntamientos"
+          message={vm.errorMessage}
+          onRetry={vm.refetch}
+          retryLabel="Reintentar"
+        />
       </View>
     );
   }
@@ -98,12 +100,6 @@ const styles = StyleSheet.create({
   footerText: {
     fontSize: 14,
     fontStyle: 'italic',
-  },
-  centerContent: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
   },
 });
 

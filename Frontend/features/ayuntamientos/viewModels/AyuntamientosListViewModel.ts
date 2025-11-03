@@ -1,8 +1,8 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { router } from 'expo-router';
 import { useAyuntamientosPaginados } from '@/hooks/ayuntamiento/useAyuntamientosPaginados';
 import { Ayuntamiento } from '@/core/Domain/Model/Ayuntamiento/Ayuntamiento';
-import { PageMetaDto, PaginationQueryDto } from '@/core/Domain/Model/Comun/Pagination';
+import { PaginationQueryDto } from '@/core/Domain/Model/Comun/Pagination';
 
 export interface AyuntamientoListItem {
   nivel: number;
@@ -17,7 +17,9 @@ export interface AyuntamientoListItem {
 
 export interface UseAyuntamientosListVMResult {
   items: AyuntamientoListItem[];
-  meta?: PageMetaDto;
+  paginaActual: number;
+  totalPaginas: number;
+  totalRegistros: number;
   isLoading: boolean;
   errorMessage?: string;
   page: number;
@@ -61,7 +63,9 @@ export function useAyuntamientosListViewModel(
 
   const {
     datos,
-    meta,
+    paginaActual,
+    totalPaginas,
+    totalRegistros,
     isLoading,
     error,
     refetch,
@@ -71,13 +75,22 @@ export function useAyuntamientosListViewModel(
 
   const errorMessage = error ? String(error.message) : undefined;
 
+  // Sincronizar page con la página efectiva que devuelve el backend
+  useEffect(() => {
+    if (paginaActual !== undefined && paginaActual !== page) {
+      setPage(paginaActual);
+    }
+  }, [paginaActual]);
+
   const navigateToDetail = useCallback((nivel: number) => {
     router.push(`/ayuntamientos/${nivel}`);
   }, []);
 
   return {
     items,
-    meta,
+    paginaActual,
+    totalPaginas,
+    totalRegistros,
     isLoading,
     errorMessage,
     page,

@@ -29,3 +29,13 @@ export interface PageDto<T> {
   meta: PageMetaDto;
 }
 
+/**
+ * ViewModel de paginación (contrato backend actual)
+ */
+export interface PaginationVm<T> {
+  Datos: T[];
+  TotalRegistros: number;
+  PaginaActual: number;
+  CantidadRegistroPorPagina: number;
+}
+

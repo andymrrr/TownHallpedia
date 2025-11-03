@@ -25,5 +25,3 @@ export function getPlaceholderImageUrl(nivel: number): string {
 export const townHallImageUrls: Record<number, string> = {
   // 1: 'https://example.com/images/townhall/th1.png',
 };
-
-

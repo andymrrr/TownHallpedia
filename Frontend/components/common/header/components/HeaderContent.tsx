@@ -1,26 +1,13 @@
 import React from 'react';
 import { View as RNView, StyleSheet } from 'react-native';
-import { Text } from '../../Themed';
+import { Text } from '../../../Themed';
 import { FontAwesome } from '@expo/vector-icons';
-import { HeaderVariant, HeaderVariantStyles } from '../types';
+import { HeaderVariant } from '../types';
+import { HeaderVariantStyles } from '../interfaces';
 import { TITLE_ICON_MARGIN } from '../constants';
+import { HeaderContentProps } from '../interfaces';
 
-interface HeaderContentProps {
-  title: string;
-  subtitle?: string;
-  variant: HeaderVariant;
-  variantStyles: HeaderVariantStyles;
-  textStyles: {
-    color: string;
-    subtitleColor: string;
-    tintColor: string;
-  };
-  showBackButton: boolean;
-  centered: boolean;
-  showIcon: boolean;
-  iconSize: number;
-  iconColor: string;
-}
+ 
 
 export function HeaderContent({
   title,
@@ -111,4 +98,3 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
 });
-

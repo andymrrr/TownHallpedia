@@ -6,7 +6,9 @@ import { Edificio } from '../entities/edificio.entity';
 import { Heroe } from '../entities/heroe.entity';
 import { Hechizo } from '../entities/hechizo.entity';
 import { Tropa } from '../entities/tropa.entity';
-import { NivelDetalle, TipoEntidad } from '../entities/nivel-detalle.entity';
+import { Animal } from '../entities/animal.entity';
+import { Parametro } from '../entities/parametro.entity';
+import { NivelDetalle } from '../entities/nivel-detalle.entity';
 import { DesbloqueosAyuntamiento } from '../entities/desbloqueos-ayuntamiento.entity';
 import {
   AYUNTAMIENTOS_NIVEL_MAXIMO,
@@ -16,10 +18,15 @@ import {
   HECHIZOS_SEED,
   TROPAS_SEED,
   DESBLOQUEOS_SEED,
+  DESBLOQUEOS_EXPANDIDOS,
+  ANIMALES_SEED,
+  AnimalSeed,
   NIVELES_BARBARO_SEED,
   NIVELES_RAYO_SEED,
   NIVELES_REY_BARBARO_SEED,
   NIVELES_CUARTEL_SEED,
+  PARAMETROS_SEED,
+  ParametroSeed,
   EntidadBaseSeed,
   HeroeSeed,
 } from './seed-data';
@@ -46,6 +53,8 @@ export class SeedService {
   };
 
   constructor(
+    @InjectRepository(Parametro)
+    private readonly parametroRepository: Repository<Parametro>,
     @InjectRepository(Ayuntamiento)
     private readonly ayuntamientoRepository: Repository<Ayuntamiento>,
     @InjectRepository(Edificio)
@@ -56,6 +65,8 @@ export class SeedService {
     private readonly hechizoRepository: Repository<Hechizo>,
     @InjectRepository(Tropa)
     private readonly tropaRepository: Repository<Tropa>,
+    @InjectRepository(Animal)
+    private readonly animalRepository: Repository<Animal>,
     @InjectRepository(NivelDetalle)
     private readonly nivelDetalleRepository: Repository<NivelDetalle>,
     @InjectRepository(DesbloqueosAyuntamiento)
@@ -63,11 +74,20 @@ export class SeedService {
     private readonly dataSource: DataSource,
   ) {}
 
+  // Cache de parámetros para evitar consultas repetidas
+  private parametrosCache: Map<string, Parametro> = new Map();
+
   /**
    * Ejecuta el proceso completo de seed de datos iniciales.
+   * 
+   * IMPORTANTE: Este método usa transacciones de base de datos para garantizar atomicidad.
+   * - Si algún paso falla y `continuarConErrores` es `false`, TODA la transacción se revierte (rollback)
+   * - Si `continuarConErrores` es `true`, los errores individuales se registran pero la transacción continúa
+   * - Valida duplicados antes de insertar: solo crea registros que no existen
+   * 
    * @param opciones - Configuración opcional para la ejecución del seed
    * @returns Resultado detallado de la ejecución
-   * @throws {SeedDatabaseException} Si ocurre un error crítico de base de datos
+   * @throws {SeedDatabaseException} Si ocurre un error crítico de base de datos (causa rollback automático)
    */
   async ejecutarSeed(opciones?: SeedOptions): Promise<SeedExecutionResult> {
     const inicio = Date.now();
@@ -84,17 +104,26 @@ export class SeedService {
     }
 
     try {
-      // Paso 1: Preparar estructura de base de datos
+      // Paso 1: Preparar estructura de base de datos (fuera de transacción - solo DDL)
       await this.prepararEstructura(config.logging);
 
       // Paso 2: Ejecutar seed dentro de transacción
+      // Si cualquier error no manejado ocurre aquí, TypeORM automáticamente hace ROLLBACK
       const resultados = await this.dataSource.transaction(async (manager) => {
+        // PRIMERO: Crear parámetros (requeridos para las demás entidades)
+        await this.seedParametros(manager, config, estadisticas);
+        
+        // Cargar parámetros en cache
+        await this.cargarParametrosCache(manager);
+
         const parciales = {
+          parametros: 0, // Ya se contabilizó en seedParametros
           ayuntamientos: await this.seedAyuntamientos(manager, config, estadisticas),
           edificios: await this.seedEdificios(manager, config, estadisticas),
           heroes: await this.seedHeroes(manager, config, estadisticas),
           hechizos: await this.seedHechizos(manager, config, estadisticas),
           tropas: await this.seedTropas(manager, config, estadisticas),
+          animales: await this.seedAnimales(manager, config, estadisticas),
           desbloqueos: await this.seedDesbloqueos(manager, config, estadisticas),
           nivelesDetalle: await this.seedNivelesDetalle(manager, config, estadisticas),
         };
@@ -173,8 +202,113 @@ export class SeedService {
   }
 
   // ==========================================================================
+  // HELPER METHODS PARA PARÁMETROS
+  // ==========================================================================
+
+  /**
+   * Carga todos los parámetros en cache para acceso rápido
+   */
+  private async cargarParametrosCache(manager: EntityManager): Promise<void> {
+    const parametros = await manager.find(Parametro);
+    this.parametrosCache.clear();
+    for (const param of parametros) {
+      const key = `${param.tipo}:${param.clave}`;
+      this.parametrosCache.set(key, param);
+    }
+  }
+
+  /**
+   * Obtiene un parámetro por tipo y clave desde el cache
+   */
+  private obtenerParametro(tipo: string, clave: string): Parametro | null {
+    const key = `${tipo}:${clave}`;
+    return this.parametrosCache.get(key) || null;
+  }
+
+  /**
+   * Obtiene el ID de un parámetro por tipo y clave
+   */
+  private obtenerParametroId(tipo: string, clave: string): number | null {
+    const param = this.obtenerParametro(tipo, clave);
+    return param?.id || null;
+  }
+
+  // ==========================================================================
   // SEED DE DATOS
   // ==========================================================================
+
+  /**
+   * Sembra datos de parámetros (debe ejecutarse primero)
+   * 
+   * Valida duplicados antes de insertar usando manager.findOne().
+   * Si ocurre un error y continuarConErrores es false, lanza excepción que causa rollback.
+   */
+  private async seedParametros(
+    manager: EntityManager,
+    config: Required<SeedOptions>,
+    estadisticas: SeedStatistics,
+  ): Promise<number> {
+    const contexto = 'Parámetros';
+    let creados = 0;
+
+    try {
+      if (config.logging) {
+        this.logger.log(`Iniciando seed de ${contexto}...`);
+      }
+
+      for (const paramData of PARAMETROS_SEED) {
+        try {
+          if (config.validarDatos) {
+            if (!paramData.tipo || !paramData.clave) {
+              throw new Error('Tipo y clave son requeridos para parámetros');
+            }
+          }
+
+          // Validación de duplicados: verifica si el registro ya existe
+          const existe = await manager.findOne(Parametro, {
+            where: { tipo: paramData.tipo, clave: paramData.clave } as FindOptionsWhere<Parametro>,
+          });
+
+          // Solo inserta si NO existe (idempotencia)
+          if (!existe) {
+            await manager.save(Parametro, {
+              tipo: paramData.tipo,
+              clave: paramData.clave,
+              valor: paramData.valor ?? undefined,
+              descripcion: paramData.descripcion ?? undefined,
+            });
+            creados++;
+            estadisticas.registrosCreados++;
+          } else {
+            // Registro ya existe, se cuenta pero no se inserta (idempotencia)
+            estadisticas.registrosExistentes++;
+          }
+        } catch (error) {
+          estadisticas.errores++;
+          if (config.logging) {
+            this.logger.warn(`Error al crear parámetro ${paramData.tipo}:${paramData.clave}: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+          }
+          // Si continuarConErrores es false, lanzamos el error para activar rollback de la transacción
+          if (!config.continuarConErrores) {
+            throw error;
+          }
+        }
+      }
+
+      if (config.logging) {
+        this.logger.log(`${contexto}: ${creados} creados, ${estadisticas.registrosExistentes} ya existían`);
+      }
+
+      return creados;
+    } catch (error) {
+      throw new SeedEntityException(
+        contexto,
+        error instanceof Error ? error.message : 'Error desconocido',
+        { creados, errores: estadisticas.errores },
+        error instanceof Error ? error : undefined,
+      );
+    }
+  }
 
   /**
    * Sembra datos de ayuntamientos
@@ -199,10 +333,12 @@ export class SeedService {
             validarNivel(nivel, 1, AYUNTAMIENTOS_NIVEL_MAXIMO, contexto);
           }
 
+          // Validación de duplicados: verifica si el ayuntamiento ya existe
           const existe = await manager.findOne(Ayuntamiento, {
             where: { nivel } as FindOptionsWhere<Ayuntamiento>,
           });
 
+          // Solo inserta si NO existe (idempotencia)
           if (!existe) {
             await manager.save(Ayuntamiento, { nivel });
             creados++;
@@ -231,6 +367,10 @@ export class SeedService {
             validarNumeroPositivo(detalle.capacidadOscuro, 'capacidadOscuro', contexto);
           }
 
+          const tipoRecursoParametroId = detalle.tipoRecurso 
+            ? this.obtenerParametroId('tipo_recurso', detalle.tipoRecurso)
+            : null;
+
           await manager.update(
             Ayuntamiento,
             { nivel: detalle.nivel },
@@ -240,7 +380,7 @@ export class SeedService {
               capacidadAlmacenOscuro: detalle.capacidadOscuro,
               tiempoConstruccionHoras: detalle.tiempoConstruccionHoras,
               costoMejora: detalle.costoMejora,
-              tipoRecurso: detalle.tipoRecurso ?? undefined,
+              tipoRecursoParametroId: tipoRecursoParametroId ?? undefined,
             },
           );
         } catch (error) {
@@ -277,7 +417,7 @@ export class SeedService {
     config: Required<SeedOptions>,
     estadisticas: SeedStatistics,
   ): Promise<number> {
-    return this.seedEntidadesBase(manager, Edificio, EDIFICIOS_SEED, 'Edificios', config, estadisticas);
+    return this.seedEntidadesBase(manager, Edificio, EDIFICIOS_SEED, 'Edificios', config, estadisticas, 'tipo_edificio');
   }
 
   /**
@@ -303,14 +443,20 @@ export class SeedService {
             validarUrl(heroeData.portada, 'portada', contexto);
           }
 
+          // Validación de duplicados: verifica si el héroe ya existe
           const existe = await manager.findOne(Heroe, {
             where: { nombre: heroeData.nombre } as FindOptionsWhere<Heroe>,
           });
 
+          // Solo inserta si NO existe (idempotencia)
           if (!existe) {
+            const tipoRecursoParametroId = heroeData.tipoRecurso 
+              ? this.obtenerParametroId('tipo_recurso', heroeData.tipoRecurso)
+              : null;
+
             await manager.save(Heroe, {
               nombre: heroeData.nombre,
-              tipoRecurso: heroeData.tipoRecurso ?? undefined,
+              tipoRecursoParametroId: tipoRecursoParametroId ?? undefined,
               portada: heroeData.portada ?? undefined,
             });
             creados++;
@@ -352,7 +498,7 @@ export class SeedService {
     config: Required<SeedOptions>,
     estadisticas: SeedStatistics,
   ): Promise<number> {
-    return this.seedEntidadesBase(manager, Hechizo, HECHIZOS_SEED, 'Hechizos', config, estadisticas);
+    return this.seedEntidadesBase(manager, Hechizo, HECHIZOS_SEED, 'Hechizos', config, estadisticas, 'tipo_hechizo');
   }
 
   /**
@@ -363,11 +509,80 @@ export class SeedService {
     config: Required<SeedOptions>,
     estadisticas: SeedStatistics,
   ): Promise<number> {
-    return this.seedEntidadesBase(manager, Tropa, TROPAS_SEED, 'Tropas', config, estadisticas);
+    return this.seedEntidadesBase(manager, Tropa, TROPAS_SEED, 'Tropas', config, estadisticas, 'tipo_tropa');
   }
 
   /**
-   * Helper genérico para sembrar entidades base
+   * Sembra datos de animales (mascotas)
+   */
+  private async seedAnimales(
+    manager: EntityManager,
+    config: Required<SeedOptions>,
+    estadisticas: SeedStatistics,
+  ): Promise<number> {
+    const contexto = 'Animales';
+    let creados = 0;
+
+    try {
+      if (config.logging) {
+        this.logger.log(`Iniciando seed de ${contexto}...`);
+      }
+
+      for (const animalData of ANIMALES_SEED) {
+        try {
+          if (config.validarDatos) {
+            validarNombre(animalData.nombre, contexto);
+            validarUrl(animalData.portada, 'portada', contexto);
+          }
+
+          // Validación de duplicados: verifica si el animal ya existe
+          const existe = await manager.findOne(Animal, {
+            where: { nombre: animalData.nombre } as FindOptionsWhere<Animal>,
+          });
+
+          // Solo inserta si NO existe (idempotencia)
+          if (!existe) {
+            const tipoParametroId = this.obtenerParametroId('tipo_entidad', 'Animal');
+
+            await manager.save(Animal, {
+              nombre: animalData.nombre,
+              descripcion: animalData.descripcion ?? undefined,
+              tipoParametroId: tipoParametroId ?? undefined,
+              portada: animalData.portada ?? undefined,
+            });
+            creados++;
+            estadisticas.registrosCreados++;
+          } else {
+            estadisticas.registrosExistentes++;
+          }
+        } catch (error) {
+          estadisticas.errores++;
+          if (config.logging) {
+            this.logger.warn(`Error al crear animal ${animalData.nombre}: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+          }
+          if (!config.continuarConErrores) {
+            throw error;
+          }
+        }
+      }
+
+      if (config.logging) {
+        this.logger.log(`${contexto}: ${creados} creados, ${estadisticas.registrosExistentes} ya existían`);
+      }
+
+      return creados;
+    } catch (error) {
+      throw new SeedEntityException(
+        contexto,
+        error instanceof Error ? error.message : 'Error desconocido',
+        { creados, errores: estadisticas.errores },
+        error instanceof Error ? error : undefined,
+      );
+    }
+  }
+
+  /**
+   * Helper genérico para sembrar entidades base (Edificio, Tropa, Hechizo)
    */
   private async seedEntidadesBase<T extends { nombre: string; tipo?: string | null; portada?: string | null }>(
     manager: EntityManager,
@@ -376,6 +591,7 @@ export class SeedService {
     contexto: string,
     config: Required<SeedOptions>,
     estadisticas: SeedStatistics,
+    tipoParametro: 'tipo_edificio' | 'tipo_tropa' | 'tipo_hechizo' = 'tipo_edificio',
   ): Promise<number> {
     let creados = 0;
     const registrosExistentesInicial = estadisticas.registrosExistentes;
@@ -392,16 +608,22 @@ export class SeedService {
             validarUrl(dato.portada, 'portada', contexto);
           }
 
+          // Validación de duplicados: verifica si la entidad ya existe
           const existe = await manager.findOne(entityClass, {
             where: { nombre: dato.nombre } as FindOptionsWhere<T>,
           });
 
+          // Solo inserta si NO existe (idempotencia)
           if (!existe) {
+            const tipoParametroId = dato.tipo 
+              ? this.obtenerParametroId(tipoParametro, dato.tipo)
+              : null;
+
             await manager.save(entityClass, {
               nombre: dato.nombre,
-              tipo: dato.tipo ?? undefined,
+              tipoParametroId: tipoParametroId ?? undefined,
               portada: dato.portada ?? undefined,
-            } as DeepPartial<T>);
+            } as unknown as DeepPartial<T>);
             creados++;
             estadisticas.registrosCreados++;
           } else {
@@ -450,7 +672,10 @@ export class SeedService {
         this.logger.log(`Iniciando seed de ${contexto}...`);
       }
 
-      for (const configDesbloqueo of DESBLOQUEOS_SEED) {
+      // Usar desbloqueos expandidos que incluyen más datos reales
+      const todosDesbloqueos = [...DESBLOQUEOS_SEED, ...DESBLOQUEOS_EXPANDIDOS];
+      
+      for (const configDesbloqueo of todosDesbloqueos) {
         try {
           const ayuntamiento = await manager.findOne(Ayuntamiento, {
             where: { nivel: configDesbloqueo.nivelAyuntamiento } as FindOptionsWhere<Ayuntamiento>,
@@ -463,32 +688,29 @@ export class SeedService {
             continue;
           }
 
-          const tipoEntidadMap: Record<string, TipoEntidad> = {
-            Edificio: TipoEntidad.EDIFICIO,
-            Tropa: TipoEntidad.TROPA,
-            Hechizo: TipoEntidad.HECHIZO,
-          };
-          const tipoEntidad = tipoEntidadMap[configDesbloqueo.tipoEntidad];
+          const tipoEntidadParametroId = this.obtenerParametroId('tipo_entidad', configDesbloqueo.tipoEntidad);
 
-          if (!tipoEntidad) {
+          if (!tipoEntidadParametroId) {
             throw new Error(`Tipo de entidad desconocido: ${configDesbloqueo.tipoEntidad}`);
           }
 
-          const entidades = await this.obtenerEntidadesPorTipo(manager, tipoEntidad, configDesbloqueo.nombres);
+          const entidades = await this.obtenerEntidadesPorTipo(manager, configDesbloqueo.tipoEntidad, configDesbloqueo.nombres);
 
           for (const entidad of entidades) {
+            // Validación de duplicados: verifica si el desbloqueo ya existe
             const existe = await manager.findOne(DesbloqueosAyuntamiento, {
               where: {
                 ayuntamientoId: ayuntamiento.id,
-                tipoEntidad,
+                tipoEntidadParametroId,
                 entidadId: entidad.id,
               } as FindOptionsWhere<DesbloqueosAyuntamiento>,
             });
 
+            // Solo inserta si NO existe (idempotencia)
             if (!existe) {
               await manager.save(DesbloqueosAyuntamiento, {
                 ayuntamientoId: ayuntamiento.id,
-                tipoEntidad,
+                tipoEntidadParametroId,
                 entidadId: entidad.id,
               });
               creados++;
@@ -528,26 +750,38 @@ export class SeedService {
    */
   private async obtenerEntidadesPorTipo(
     manager: EntityManager,
-    tipoEntidad: TipoEntidad,
+    tipoEntidad: string,
     nombres: string[],
   ): Promise<Array<{ id: number }>> {
     switch (tipoEntidad) {
-      case TipoEntidad.EDIFICIO:
+      case 'Edificio':
         return manager
           .createQueryBuilder(Edificio, 'e')
           .where('e.nombre IN (:...nombres)', { nombres })
           .getMany();
 
-      case TipoEntidad.TROPA:
+      case 'Tropa':
         return manager
           .createQueryBuilder(Tropa, 't')
           .where('t.nombre IN (:...nombres)', { nombres })
           .getMany();
 
-      case TipoEntidad.HECHIZO:
+      case 'Hechizo':
         return manager
           .createQueryBuilder(Hechizo, 'h')
           .where('h.nombre IN (:...nombres)', { nombres })
+          .getMany();
+
+      case 'Heroe':
+        return manager
+          .createQueryBuilder(Heroe, 'h')
+          .where('h.nombre IN (:...nombres)', { nombres })
+          .getMany();
+
+      case 'Animal':
+        return manager
+          .createQueryBuilder(Animal, 'a')
+          .where('a.nombre IN (:...nombres)', { nombres })
           .getMany();
 
       default:
@@ -621,21 +855,30 @@ export class SeedService {
           validarNumeroPositivo(nivel.vida, 'vida', 'Nivel Detalle Tropa');
         }
 
+        const tipoEntidadParametroId = this.obtenerParametroId('tipo_entidad', 'Tropa');
+        const tipoRecursoParametroId = this.obtenerParametroId('tipo_recurso', nivel.recurso);
+
+        if (!tipoEntidadParametroId) {
+          throw new Error('Parámetro tipo_entidad:Tropa no encontrado');
+        }
+
+        // Validación de duplicados: verifica si el nivel ya existe
         const existe = await manager.findOne(NivelDetalle, {
           where: {
-            tipoEntidad: TipoEntidad.TROPA,
+            tipoEntidadParametroId,
             entidadId: tropa.id,
             nivel: nivel.nivel,
           },
         });
 
+        // Solo inserta si NO existe (idempotencia)
         if (!existe) {
           await manager.save(NivelDetalle, {
-            tipoEntidad: TipoEntidad.TROPA,
+            tipoEntidadParametroId,
             entidadId: tropa.id,
             nivel: nivel.nivel,
             costoMejora: nivel.costo,
-            tipoRecurso: nivel.recurso,
+            tipoRecursoParametroId: tipoRecursoParametroId ?? undefined,
             tiempoHoras: nivel.tiempo,
             danoPorSegundo: nivel.dano,
             vida: nivel.vida,
@@ -688,21 +931,30 @@ export class SeedService {
           validarNumeroPositivo(nivel.costo, 'costo', 'Nivel Detalle Hechizo');
         }
 
+        const tipoEntidadParametroId = this.obtenerParametroId('tipo_entidad', 'Hechizo');
+        const tipoRecursoParametroId = this.obtenerParametroId('tipo_recurso', nivel.recurso);
+
+        if (!tipoEntidadParametroId) {
+          throw new Error('Parámetro tipo_entidad:Hechizo no encontrado');
+        }
+
+        // Validación de duplicados: verifica si el nivel ya existe
         const existe = await manager.findOne(NivelDetalle, {
           where: {
-            tipoEntidad: TipoEntidad.HECHIZO,
+            tipoEntidadParametroId,
             entidadId: hechizo.id,
             nivel: nivel.nivel,
           },
         });
 
+        // Solo inserta si NO existe (idempotencia)
         if (!existe) {
           await manager.save(NivelDetalle, {
-            tipoEntidad: TipoEntidad.HECHIZO,
+            tipoEntidadParametroId,
             entidadId: hechizo.id,
             nivel: nivel.nivel,
             costoMejora: nivel.costo,
-            tipoRecurso: nivel.recurso,
+            tipoRecursoParametroId: tipoRecursoParametroId ?? undefined,
             tiempoHoras: nivel.tiempo,
             danoPorSegundo: nivel.dano,
             capacidad: nivel.capacidad ?? undefined,
@@ -756,21 +1008,30 @@ export class SeedService {
           validarNumeroPositivo(nivel.vida, 'vida', 'Nivel Detalle Héroe');
         }
 
+        const tipoEntidadParametroId = this.obtenerParametroId('tipo_entidad', 'Heroe');
+        const tipoRecursoParametroId = this.obtenerParametroId('tipo_recurso', nivel.recurso);
+
+        if (!tipoEntidadParametroId) {
+          throw new Error('Parámetro tipo_entidad:Heroe no encontrado');
+        }
+
+        // Validación de duplicados: verifica si el nivel ya existe
         const existe = await manager.findOne(NivelDetalle, {
           where: {
-            tipoEntidad: TipoEntidad.HEROE,
+            tipoEntidadParametroId,
             entidadId: heroe.id,
             nivel: nivel.nivel,
           },
         });
 
+        // Solo inserta si NO existe (idempotencia)
         if (!existe) {
           await manager.save(NivelDetalle, {
-            tipoEntidad: TipoEntidad.HEROE,
+            tipoEntidadParametroId,
             entidadId: heroe.id,
             nivel: nivel.nivel,
             costoMejora: nivel.costo,
-            tipoRecurso: nivel.recurso,
+            tipoRecursoParametroId: tipoRecursoParametroId ?? undefined,
             tiempoHoras: nivel.tiempo,
             vida: nivel.vida,
           });
@@ -823,21 +1084,30 @@ export class SeedService {
           validarNumeroPositivo(nivel.vida, 'vida', 'Nivel Detalle Edificio');
         }
 
+        const tipoEntidadParametroId = this.obtenerParametroId('tipo_entidad', 'Edificio');
+        const tipoRecursoParametroId = this.obtenerParametroId('tipo_recurso', nivel.recurso);
+
+        if (!tipoEntidadParametroId) {
+          throw new Error('Parámetro tipo_entidad:Edificio no encontrado');
+        }
+
+        // Validación de duplicados: verifica si el nivel ya existe
         const existe = await manager.findOne(NivelDetalle, {
           where: {
-            tipoEntidad: TipoEntidad.EDIFICIO,
+            tipoEntidadParametroId,
             entidadId: edificio.id,
             nivel: nivel.nivel,
           },
         });
 
+        // Solo inserta si NO existe (idempotencia)
         if (!existe) {
           await manager.save(NivelDetalle, {
-            tipoEntidad: TipoEntidad.EDIFICIO,
+            tipoEntidadParametroId,
             entidadId: edificio.id,
             nivel: nivel.nivel,
             costoMejora: nivel.costo,
-            tipoRecurso: nivel.recurso,
+            tipoRecursoParametroId: tipoRecursoParametroId ?? undefined,
             tiempoHoras: nivel.tiempo,
             vida: nivel.vida,
           });

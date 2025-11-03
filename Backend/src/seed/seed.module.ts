@@ -7,6 +7,8 @@ import { Edificio } from '../entities/edificio.entity';
 import { Heroe } from '../entities/heroe.entity';
 import { Hechizo } from '../entities/hechizo.entity';
 import { Tropa } from '../entities/tropa.entity';
+import { Animal } from '../entities/animal.entity';
+import { Parametro } from '../entities/parametro.entity';
 import { NivelDetalle } from '../entities/nivel-detalle.entity';
 import { DesbloqueosAyuntamiento } from '../entities/desbloqueos-ayuntamiento.entity';
 
@@ -21,11 +23,13 @@ import { DesbloqueosAyuntamiento } from '../entities/desbloqueos-ayuntamiento.en
 @Module({
   imports: [
     TypeOrmModule.forFeature([
+      Parametro,
       Ayuntamiento,
       Edificio,
       Heroe,
       Hechizo,
       Tropa,
+      Animal,
       NivelDetalle,
       DesbloqueosAyuntamiento,
     ]),

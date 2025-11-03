@@ -1,5 +1,5 @@
 import { SelectQueryBuilder, ObjectLiteral } from 'typeorm';
-import { PaginationQueryDto, PageDto, PageMetaDto } from './pagination.dto';
+import { PaginationQueryDto, PageDto, PageMetaDto, PaginationVm } from './pagination.dto';
 
 type SortTuple = [column: string, order: 'ASC' | 'DESC'];
 
@@ -49,6 +49,21 @@ export async function paginateQueryBuilder<T extends ObjectLiteral>(
   };
 
   return { data, meta };
+}
+
+// Helper genérico: devuelve directamente el ViewModel de paginación estándar
+export async function paginateVmQueryBuilder<T extends ObjectLiteral>(
+  qb: SelectQueryBuilder<T>,
+  query: PaginationQueryDto,
+  defaultSort?: SortTuple[],
+): Promise<PaginationVm<T>> {
+  const page = await paginateQueryBuilder(qb, query, defaultSort);
+  return {
+    Datos: page.data,
+    TotalRegistros: page.meta.totalItems ?? page.data.length,
+    PaginaActual: page.meta.page,
+    CantidadRegistroPorPagina: page.meta.limit,
+  };
 }
 
 

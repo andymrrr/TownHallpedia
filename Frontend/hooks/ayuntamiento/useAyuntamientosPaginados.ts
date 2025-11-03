@@ -1,12 +1,10 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { AyuntamientoService } from '@/core/api/Implementacion/AyuntamientoService';
-import { ObtenerAyuntamientosPaginadosCasoUso } from '@/core/Domain/CasoUso/Ayuntamiento';
 import { Ayuntamiento } from '@/core/Domain/Model/Ayuntamiento/Ayuntamiento';
-import { PageDto, PageMetaDto, PaginationQueryDto } from '@/core/Domain/Model/Comun/Pagination';
-import { Respuesta } from '@/core/Domain/Model/Comun/Respuesta';
+import { PageMetaDto, PaginationQueryDto } from '@/core/Domain/Model/Comun/Pagination';
+import { PaginationVm } from '@/core/Domain/Model/Comun/PaginationVm';
 
 const servicio = new AyuntamientoService();
-const casoUso = new ObtenerAyuntamientosPaginadosCasoUso(servicio);
 
 export interface UseAyuntamientosPaginadoOptions {
   enabled?: boolean;
@@ -24,7 +22,7 @@ export const useAyuntamientosPaginados = (
   const sort = parametros.sort;
   const withCount = parametros.withCount ?? true;
 
-  const query = useQuery<Respuesta<PageDto<Ayuntamiento>>, Error>({
+  const query = useQuery<PaginationVm<Ayuntamiento>, Error>({
     queryKey: [
       'ayuntamientos-paginado',
       page,
@@ -33,7 +31,7 @@ export const useAyuntamientosPaginados = (
       sort ?? 'default',
       withCount ? 'count' : 'no-count',
     ],
-    queryFn: async () => {
+    queryFn: async (): Promise<PaginationVm<Ayuntamiento>> => {
       const req: PaginationQueryDto = {
         page,
         limit,
@@ -41,7 +39,14 @@ export const useAyuntamientosPaginados = (
         sort,
         withCount,
       };
-      return await casoUso.ejecutar(req);
+      const resp: any = await servicio.paginate(req as PaginationQueryDto);
+      if (resp && resp.Datos && (resp.PaginaActual !== undefined)) {
+        return resp as PaginationVm<Ayuntamiento>;
+      }
+      if (resp && resp.completado && resp.datos) {
+        return resp.datos as PaginationVm<Ayuntamiento>;
+      }
+      return resp as PaginationVm<Ayuntamiento>;
     },
     placeholderData: keepPreviousData,
     staleTime: options?.staleTimeMs ?? 1000 * 60 * 2,
@@ -51,20 +56,32 @@ export const useAyuntamientosPaginados = (
     retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 30000),
   });
 
-  const pageDto = query.data?.datos as PageDto<Ayuntamiento> | undefined;
-  const meta = pageDto?.meta as PageMetaDto | undefined;
-  const datos = pageDto?.data ?? [];
+  const vm = query.data;
+  const datos: Ayuntamiento[] = vm?.Datos ?? [];
+  const paginaActual = vm?.PaginaActual ?? (parametros.page ?? 1);
+  const limitNorm = vm?.CantidadRegistroPorPagina ?? (parametros.limit ?? 20);
+  const totalItems = vm?.TotalRegistros ?? datos.length;
+  const meta: PageMetaDto | undefined = vm
+    ? {
+        page: paginaActual,
+        limit: limitNorm,
+        totalItems,
+        totalPages: Math.max(1, Math.ceil(totalItems / (limitNorm || 1))),
+        hasNextPage: paginaActual * (limitNorm || 1) < totalItems,
+        hasPrevPage: paginaActual > 1,
+      }
+    : undefined;
 
   const totalRegistros = meta?.totalItems ?? 0;
-  const totalPaginas = meta?.totalPages ?? Math.max(1, Math.ceil(totalRegistros / limit));
-  const paginaActual = meta?.page ?? page;
+  const totalPaginas = meta?.totalPages ?? Math.max(1, Math.ceil(totalRegistros / (limitNorm || 1)));
+  const paginaActualRef = meta?.page ?? page;
 
   return {
     datos,
     meta,
     totalRegistros,
     totalPaginas,
-    paginaActual,
+    paginaActual: paginaActualRef,
     respuestaCompleta: query.data,
 
     isLoading: query.isLoading,
@@ -75,14 +92,11 @@ export const useAyuntamientosPaginados = (
     error: query.error,
     refetch: query.refetch,
 
-    hayPaginaAnterior: paginaActual > 1,
-    hayPaginaSiguiente: paginaActual < totalPaginas,
-    esPrimeraPagina: paginaActual === 1,
-    esUltimaPagina: paginaActual === totalPaginas,
+    hayPaginaAnterior: paginaActualRef > 1,
+    hayPaginaSiguiente: paginaActualRef < totalPaginas,
+    esPrimeraPagina: paginaActualRef === 1,
+    esUltimaPagina: paginaActualRef === totalPaginas,
     hayDatos: datos.length > 0,
-
-    registroInicio: datos.length > 0 ? (paginaActual - 1) * limit + 1 : 0,
-    registroFin: datos.length > 0 ? Math.min(paginaActual * limit, totalRegistros) : 0,
   } as const;
 };
 
