@@ -13,7 +13,6 @@ import {
   HeroeModule,
   HechizoModule,
   NivelDetalleModule,
-  DesbloqueosAyuntamientoModule,
 } from './modules';
 import { SeedModule } from './seed/seed.module';
 
@@ -37,7 +36,6 @@ import { SeedModule } from './seed/seed.module';
     HeroeModule,
     HechizoModule,
     NivelDetalleModule,
-    DesbloqueosAyuntamientoModule,
     SeedModule,
   ],
   controllers: [AppController],

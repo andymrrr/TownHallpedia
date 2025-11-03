@@ -4,4 +4,3 @@ export * from './tropa.module';
 export * from './heroe.module';
 export * from './hechizo.module';
 export * from './nivel-detalle.module';
-export * from './desbloqueos-ayuntamiento.module';

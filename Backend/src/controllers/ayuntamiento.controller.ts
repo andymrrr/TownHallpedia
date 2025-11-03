@@ -117,6 +117,26 @@ export class AyuntamientoController {
     }
   }
 
+  @Get('nivel/:nivel/desbloqueos')
+  @ApiOperation({ summary: 'Obtener ayuntamiento por nivel con sus desbloqueos' })
+  @ApiParam({ name: 'nivel', description: 'Nivel del ayuntamiento (1-15)', type: 'integer' })
+  @ApiOkResponse({
+    description: 'Ayuntamiento con desbloqueos obtenido exitosamente',
+    type: AyuntamientoResponseDto,
+  })
+  @ApiNotFoundResponse({ description: 'Ayuntamiento no encontrado' })
+  async findByNivelWithDesbloqueos(@Param('nivel', ParseIntPipe) nivel: number): Promise<Respuesta<any>> {
+    try {
+      const ayuntamiento = await this.ayuntamientoService.findByNivelWithDesbloqueos(nivel);
+      if (!ayuntamiento) {
+        return fail<any>('Ayuntamiento no encontrado', { tipoError: 'AYUNTAMIENTO' });
+      }
+      return ok<any>(ayuntamiento);
+    } catch (error: any) {
+      return fail<any>('Error al obtener ayuntamiento por nivel con desbloqueos', { errorTecnico: error?.message, tipoError: 'AYUNTAMIENTO' });
+    }
+  }
+
   @Get(':id/desbloqueos')
   @ApiOperation({ summary: 'Obtener ayuntamiento con sus desbloqueos' })
   @ApiParam({ name: 'id', description: 'ID del ayuntamiento', type: 'integer' })

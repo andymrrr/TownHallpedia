@@ -47,10 +47,36 @@ export class AyuntamientoService implements IAyuntamientoService {
     }
   }
 
+  async findByNivelWithDesbloqueos(nivel: number): Promise<Respuesta<Ayuntamiento>> {
+    try {
+      const url = `${this.baseUrl}/nivel/${nivel}/desbloqueos`;
+      console.log('📡 Llamando a:', url);
+      const response = await Api.get<Respuesta<Ayuntamiento> | Ayuntamiento>(url);
+      console.log('📥 Respuesta recibida:', response.data);
+      
+      // Si la respuesta ya tiene la estructura Respuesta, retornarla directamente
+      if (response.data && typeof response.data === 'object' && 'completado' in response.data) {
+        console.log('✅ Respuesta tiene estructura Respuesta');
+        return response.data as Respuesta<Ayuntamiento>;
+      }
+      
+      // Si solo viene el dato, envolverlo en Respuesta
+      console.log('📦 Envolviendo datos en Respuesta');
+      return {
+        completado: true,
+        datos: response.data as Ayuntamiento
+      };
+    } catch (error: any) {
+      console.error('❌ Error en findByNivelWithDesbloqueos:', error);
+      return mapErrorARespuesta<Ayuntamiento>(error, 'obtener ayuntamiento por nivel con desbloqueos', 'AYUNTAMIENTO');
+    }
+  }
+
   async findWithDesbloqueos(id: number): Promise<Respuesta<Ayuntamiento>> {
     try {
       const url = `${this.baseUrl}/${id}/desbloqueos`;
       const response = await Api.get<Ayuntamiento>(url);
+      console.log(response.data);
       return {
         completado: true,
         datos: response.data

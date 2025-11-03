@@ -1,3 +1,5 @@
+import { DesbloqueoAyuntamiento } from './DesbloqueoAyuntamiento';
+
 export interface Ayuntamiento {
   id: number;
   nivel: number;
@@ -8,5 +10,6 @@ export interface Ayuntamiento {
   costoMejora?: number;
   tipoRecurso?: string;
   portada?: string;
+  desbloqueos?: DesbloqueoAyuntamiento[];
 }
 

@@ -5,5 +5,6 @@ export { ObtenerAyuntamientosPaginadosCasoUso } from './ObtenerAyuntamientosPagi
 export { ObtenerAyuntamientoPorIdCasoUso } from './ObtenerAyuntamientoPorIdCasoUso';
 export { ObtenerAyuntamientoPorNivelCasoUso } from './ObtenerAyuntamientoPorNivelCasoUso';
 export { ObtenerAyuntamientoConDesbloqueosCasoUso } from './ObtenerAyuntamientoConDesbloqueosCasoUso';
+export { ObtenerAyuntamientoPorNivelConDesbloqueosCasoUso } from './ObtenerAyuntamientoPorNivelConDesbloqueosCasoUso';
 export { EliminarAyuntamientoCasoUso } from './EliminarAyuntamientoCasoUso';
 

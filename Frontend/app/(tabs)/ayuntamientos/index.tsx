@@ -4,8 +4,8 @@ import AppHeader from '@/components/common/header/AppHeader';
 import { LoadingState, ErrorState } from '@/components/common/states';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
-import { TownHallCard } from '@/features/ayuntamientos/components';
-import { useAyuntamientosListViewModel } from '@/features/ayuntamientos/viewModels';
+import { TownHallCard } from '@/features/ayuntamientos/listar/components';
+import { useAyuntamientosListViewModel } from '@/features/ayuntamientos/listar/viewModels';
 
 export const options = {
   title: 'Ayuntamientos',
