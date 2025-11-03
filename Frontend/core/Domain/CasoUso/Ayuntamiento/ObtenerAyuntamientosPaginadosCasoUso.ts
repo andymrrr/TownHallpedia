@@ -14,26 +14,13 @@ export class ObtenerAyuntamientosPaginadosCasoUso {
   }
 
   async ejecutar(query: PaginationQueryDto): Promise<Respuesta<PageDto<Ayuntamiento>>> {
-    try {
+   
       const resultado = await this._ayuntamientoService.paginate(query);
 
-      if (!resultado.completado) {
-        throw new Error(`Error al obtener ayuntamientos paginados: ${resultado.mensaje}`);
-      }
+     console.log(resultado);
 
       return resultado;
-    } catch (error) {
-      console.error('Error en ObtenerAyuntamientosPaginadosCasoUso:', error);
-      const errorResponse: Respuesta<PageDto<Ayuntamiento>> = {
-        completado: false,
-        mensaje: error instanceof Error ? error.message : 'Error desconocido al obtener ayuntamientos paginados',
-        errorTecnico: error instanceof Error ? error.message : 'Error desconocido',
-        errores: null,
-        tipoError: 'AYUNTAMIENTO'
-      };
-
-      return errorResponse;
-    }
+    
   }
 }
 

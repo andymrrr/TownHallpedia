@@ -4,7 +4,7 @@ import { AppHeader } from '@/components/common';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
 import { TownHallCard } from '@/features/ayuntamientos/components';
-import { useAyuntamientosScreen } from './useAyuntamientosScreen';
+import { useAyuntamientosListViewModel } from '@/features/ayuntamientos/viewModels';
 
 export const options = {
   title: 'Ayuntamientos',
@@ -15,9 +15,9 @@ export const options = {
 export default function AyuntamientosScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
-  const { viewModel, isLoading, error } = useAyuntamientosScreen();
+  const vm = useAyuntamientosListViewModel({ page: 1, limit: 20, withCount: true });
 
-  if (isLoading) {
+  if (vm.isLoading) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <AppHeader title="TownHallpedia" variant="compact" />
@@ -28,7 +28,7 @@ export default function AyuntamientosScreen() {
     );
   }
 
-  if (error) {
+  if (vm.errorMessage) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <AppHeader title="TownHallpedia" variant="compact" />
@@ -51,7 +51,7 @@ export default function AyuntamientosScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.ayuntamientosContainer}>
-          {viewModel.items.map((ayuntamiento) => (
+          {vm.items.map((ayuntamiento) => (
             <TownHallCard
               key={ayuntamiento.nivel}
               nivel={ayuntamiento.nivel}
@@ -61,7 +61,7 @@ export default function AyuntamientosScreen() {
               tiempoConstruccion={ayuntamiento.tiempoConstruccion}
               costoMejora={ayuntamiento.costoMejora}
               tipoRecurso={ayuntamiento.tipoRecurso}
-              onPress={() => viewModel.navigateToDetail(ayuntamiento.nivel)}
+              onPress={() => vm.navigateToDetail(ayuntamiento.nivel)}
             />
           ))}
         </View>

@@ -10,6 +10,7 @@ import {
   HttpStatus,
   HttpCode,
   Query,
+  UsePipes,
 } from '@nestjs/common';
 import { EdificioService } from '../services/edificio.service';
 import {
@@ -19,7 +20,6 @@ import {
 } from '../dto/edificio.dto';
 import { plainToClass } from 'class-transformer';
 import { Respuesta, ok, fail } from '../common/respuesta/respuesta';
-import { UsePipes, Query } from '@nestjs/common';
 import { PaginationPipe } from '../common/pagination/pagination.pipe';
 import { PageDto, PaginationQueryDto } from '../common/pagination/pagination.dto';
 

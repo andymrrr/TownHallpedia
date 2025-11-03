@@ -59,6 +59,7 @@ export class AyuntamientoController {
   @UsePipes(new PaginationPipe())
   async paginar(@Query() query: PaginationQueryDto): Promise<Respuesta<PageDto<any>>> {
     try {
+      console.log('query', query);
       const page = await this.ayuntamientoService.paginate(query);
       return ok<PageDto<any>>(page);
     } catch (error: any) {

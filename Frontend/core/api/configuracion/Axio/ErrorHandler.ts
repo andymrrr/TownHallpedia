@@ -1,6 +1,5 @@
 import { AxiosError } from 'axios';
 import { ApiError } from './types';
-import { TokenManager } from './TokenManager';
 import { AuthEvents } from '../events/AuthEvents';
 
 export class ErrorHandler {
@@ -15,10 +14,9 @@ export class ErrorHandler {
     };
   }
 
-  static shouldRetryWithRefresh(error: AxiosError, originalRequest: any): boolean {
-    return error.response?.status === 401 && 
-           !originalRequest._retry && 
-           !!TokenManager.getRefreshToken();
+  static shouldRetryWithRefresh(_error: AxiosError, _originalRequest: any): boolean {
+    // Refresh deshabilitado
+    return false;
   }
 
   static dispatchLogoutEvent(): void {
