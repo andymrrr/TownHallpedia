@@ -4,7 +4,7 @@ import { PageDto, PaginationQueryDto } from '@/core/Domain/Model/Comun/Paginatio
 import { PaginationVm } from '@/core/Domain/Model/Comun/PaginationVm';
 import { Ayuntamiento, CreateAyuntamiento, UpdateAyuntamiento } from '@/core/Domain/Model/Ayuntamiento';
 import { IAyuntamientoService } from '../Interfaz/IAyuntamientoService';
-import { mapErrorARespuesta } from '@/utils/Api/ManejoErrores';
+import { mapErrorARespuesta, mapErrorAPaginationVm } from '@/utils/Api/ManejoErrores';
 
 export class AyuntamientoService implements IAyuntamientoService {
   private baseUrl = '/ayuntamientos';
@@ -61,10 +61,13 @@ export class AyuntamientoService implements IAyuntamientoService {
   }
 
   async paginate(query: PaginationQueryDto): Promise<PaginationVm<Ayuntamiento>> {
-    const url = `${this.baseUrl}/paginacion`;
-    const response = await Api.get<PaginationVm<Ayuntamiento>>(url, { params: query });
-    
-    return response.data;
+    try {
+      const url = `${this.baseUrl}/paginacion`;
+      const response = await Api.get<PaginationVm<Ayuntamiento>>(url, { params: query });
+      return response.data;
+    } catch (error: any) {
+      return mapErrorAPaginationVm<Ayuntamiento>(error, 'obtener ayuntamientos paginados', query.page, query.limit, 'AYUNTAMIENTO');
+    }
   }
 
   async create(createDto: CreateAyuntamiento): Promise<Respuesta<Ayuntamiento>> {
