@@ -14,6 +14,25 @@
 
 ---
 
+## ⚠️ Aviso Importante
+
+<div align="center">
+
+### 🚫 **Este proyecto NO es oficial de Clash of Clans**
+
+**TownHallpedia** es un proyecto **no oficial** y **independiente** creado por la comunidad. Este proyecto no está afiliado, asociado, autorizado, respaldado o patrocinado de ninguna manera por **Supercell** o **Clash of Clans**.
+
+- ❌ No es una aplicación oficial de Supercell
+- ❌ No está respaldado por Supercell
+- ✅ Es un proyecto de código abierto de la comunidad
+- ✅ Creado con fines educativos y de referencia
+
+**Clash of Clans** es una marca registrada de **Supercell Oy**. Todos los derechos reservados.
+
+</div>
+
+---
+
 ## 📖 Descripción
 
 **TownHallpedia** es una aplicación web y móvil completa que proporciona una base de datos integral de información del juego Clash of Clans. Permite a los jugadores consultar información detallada sobre:
@@ -295,12 +314,32 @@ Este proyecto está bajo la Licencia **UNLICENSED**.
 
 ---
 
-## 🙏 Agradecimientos
+## 🙏 Créditos y Agradecimientos
 
-- **Supercell** - Por crear Clash of Clans
-- **NestJS Team** - Por el excelente framework
+### 🎮 Juego Original
+
+- **Supercell Oy** - Creadores de **Clash of Clans**
+  - Clash of Clans es una marca registrada de Supercell Oy
+  - Todos los derechos del juego pertenecen a Supercell
+  - Este proyecto no está afiliado con Supercell
+
+### 🛠️ Tecnologías y Frameworks
+
+- **NestJS Team** - Por el excelente framework Node.js
 - **Expo Team** - Por las herramientas de desarrollo móvil
-- **Comunidad Open Source** - Por las librerías y herramientas utilizadas
+- **React Native Team** - Por el framework de aplicaciones móviles
+- **TypeORM Team** - Por el ORM para TypeScript
+- **React Query Team** - Por la gestión de estado del servidor
+
+### 🌟 Comunidad
+
+- **Comunidad Open Source** - Por todas las librerías y herramientas utilizadas
+- **Comunidad de Clash of Clans** - Por la inspiración y feedback
+- **Contribuidores del Proyecto** - Por hacer este proyecto posible
+
+### 📝 Nota Legal
+
+Este proyecto utiliza información y referencias de Clash of Clans con fines educativos y de referencia únicamente. Todos los derechos de Clash of Clans, incluyendo personajes, nombres, imágenes y contenido del juego, son propiedad de Supercell Oy. Este proyecto no busca infringir ningún derecho de autor y está destinado únicamente para uso educativo y de referencia por parte de la comunidad.
 
 ---
 
@@ -324,10 +363,26 @@ Para soporte, por favor:
 
 ---
 
+## ⚖️ Aviso Legal
+
+Este proyecto es **NO OFICIAL** y **NO está afiliado con Supercell Oy o Clash of Clans**.
+
+- **Clash of Clans** es una marca registrada de **Supercell Oy**
+- Todos los derechos del juego pertenecen a **Supercell Oy**
+- Este proyecto es de código abierto y se proporciona "tal cual" sin garantías
+- El uso de este proyecto es bajo tu propia responsabilidad
+- Este proyecto no busca infringir ningún derecho de autor
+
+Para más información sobre Clash of Clans, visita: [supercell.com](https://supercell.com)
+
+---
+
 <div align="center">
 
 **Hecho con ❤️ para la comunidad de Clash of Clans**
 
 ⭐ Si te gusta este proyecto, dale una estrella!
+
+**⚠️ Recuerda: Este proyecto NO es oficial de Clash of Clans**
 
 </div>

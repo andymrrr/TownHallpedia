@@ -52,6 +52,25 @@ export default function AyuntamientosScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        {/* Alerta de no oficial */}
+        <View style={[styles.warningAlert, { 
+          backgroundColor: colors.card,
+          borderColor: colors.accent + '40',
+        }]}>
+          <Text style={[styles.warningIcon, { color: colors.accent }]}>⚠️</Text>
+          <View style={styles.warningContent}>
+            <Text style={[styles.warningTitle, { color: colors.text }]}>
+              Aviso Importante
+            </Text>
+            <Text style={[styles.warningText, { color: colors.text + 'CC' }]}>
+              Esta aplicación <Text style={[styles.warningBold, { color: colors.text }]}>NO es oficial</Text> de Clash of Clans. Es un proyecto independiente de la comunidad.
+            </Text>
+            <Text style={[styles.warningSubtext, { color: colors.text + '99' }]}>
+              Clash of Clans es una marca registrada de Supercell Oy
+            </Text>
+          </View>
+        </View>
+
         <View style={styles.ayuntamientosContainer}>
           {vm.items.map((ayuntamiento) => (
             <TownHallCard
@@ -90,6 +109,46 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 20,
     paddingBottom: 40,
+  },
+  warningAlert: {
+    flexDirection: 'row',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    marginBottom: 20,
+    shadowColor: '#FFD700',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  warningIcon: {
+    fontSize: 24,
+    marginRight: 12,
+  },
+  warningContent: {
+    flex: 1,
+  },
+  warningTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 6,
+  },
+  warningText: {
+    fontSize: 14,
+    lineHeight: 20,
+    marginBottom: 4,
+  },
+  warningBold: {
+    fontWeight: 'bold',
+  },
+  warningSubtext: {
+    fontSize: 12,
+    marginTop: 4,
+    fontStyle: 'italic',
   },
   ayuntamientosContainer: {
     marginTop: 0,
