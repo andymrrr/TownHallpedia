@@ -29,20 +29,21 @@ function getBuildingColor(tipo?: string): string {
 }
 
 function getBuildingGradient(color: string, colorScheme: 'light' | 'dark' | null | undefined): string[] {
-  const isDark = colorScheme === 'dark';
+  // Gradientes estilo PlayStation Store - más sutiles
+  const baseColor = color;
   
   if (color === '#E74C3C') {
     // Defensa - gradiente rojo
-    return isDark ? ['#C0392B', '#E74C3C'] : ['#EC7063', '#E74C3C'];
+    return [baseColor + '25', baseColor + '10'];
   } else if (color === '#F39C12') {
     // Recurso - gradiente naranja/amarillo
-    return isDark ? ['#D68910', '#F39C12'] : ['#F7DC6F', '#F39C12'];
+    return [baseColor + '25', baseColor + '10'];
   } else if (color === '#3498DB') {
-    // Tropa - gradiente azul
-    return isDark ? ['#2980B9', '#3498DB'] : ['#5DADE2', '#3498DB'];
+    // Tropa - gradiente azul (usar azul PS)
+    return ['#0070F325', '#0070F310'];
   } else {
     // Por defecto - gradiente marrón
-    return isDark ? ['#6E2C00', '#8B4513'] : ['#A0522D', '#8B4513'];
+    return [baseColor + '25', baseColor + '10'];
   }
 }
 
@@ -168,14 +169,16 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: 'hidden',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 12,
   },
   cardInner: {
     borderRadius: 16,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#2a2a2a',
   },
   buildingHeader: {
     width: '100%',
@@ -247,6 +250,8 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 8,
     gap: 6,
+    borderWidth: 1,
+    borderColor: '#2a2a2a',
   },
   statText: {
     fontSize: 13,

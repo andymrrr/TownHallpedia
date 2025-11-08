@@ -1,30 +1,30 @@
-// Colores temáticos para TownHallpedia - Clash of Clans
-const tintColorLight = '#FF6B35'; // Naranja vibrante del juego
-const tintColorDark = '#FFD700'; // Dorado para modo oscuro
+// Colores temáticos estilo PlayStation Store
+const tintColorLight = '#0070F3'; // Azul vibrante estilo PS Store
+const tintColorDark = '#0070F3'; // Azul vibrante para modo oscuro
 
 export default {
   light: {
-    text: '#1a1a1a',
-    background: '#f5f5f5',
+    text: '#FFFFFF',
+    background: '#0a0a0a', // Fondo casi negro estilo PS Store
     tint: tintColorLight,
-    tabIconDefault: '#999',
+    tabIconDefault: '#666666',
     tabIconSelected: tintColorLight,
-    card: '#ffffff',
-    cardBorder: '#e0e0e0',
-    primary: '#FF6B35',
+    card: '#1a1a1a', // Cards oscuras pero más claras que el fondo
+    cardBorder: '#2a2a2a', // Bordes sutiles
+    primary: '#0070F3', // Azul PS
     secondary: '#4A90E2',
     accent: '#FFD700',
   },
   dark: {
-    text: '#ffffff',
-    background: '#121212',
+    text: '#FFFFFF',
+    background: '#000000', // Fondo negro puro estilo PS Store
     tint: tintColorDark,
-    tabIconDefault: '#666',
+    tabIconDefault: '#666666',
     tabIconSelected: tintColorDark,
-    card: '#1e1e1e',
-    cardBorder: '#333333',
-    primary: '#FFD700',
-    secondary: '#FF6B35',
-    accent: '#4A90E2',
+    card: '#1a1a1a', // Cards con fondo oscuro
+    cardBorder: '#2a2a2a', // Bordes sutiles
+    primary: '#0070F3', // Azul PS
+    secondary: '#4A90E2',
+    accent: '#FFD700',
   },
 };

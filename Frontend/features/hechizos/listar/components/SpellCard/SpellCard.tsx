@@ -32,18 +32,18 @@ function getSpellColor(tipo: SpellType): string {
 }
 
 function getSpellGradient(color: string, colorScheme: 'light' | 'dark' | null | undefined): string[] {
-  const isDark = colorScheme === 'dark';
   const baseColor = color;
   
+  // Gradientes estilo PlayStation Store - más sutiles y oscuros
   if (baseColor === '#8E44AD') {
     // Oscuro - gradiente morado
-    return isDark ? ['#6A1B9A', '#8E44AD'] : ['#9B59B6', '#8E44AD'];
+    return [baseColor + '25', baseColor + '10'];
   } else if (baseColor === '#E67E22') {
     // Super - gradiente naranja
-    return isDark ? ['#D35400', '#E67E22'] : ['#F39C12', '#E67E22'];
+    return [baseColor + '25', baseColor + '10'];
   } else {
-    // Elixir - gradiente azul
-    return isDark ? ['#2980B9', '#3498DB'] : ['#5DADE2', '#3498DB'];
+    // Elixir - gradiente azul (usar azul PS)
+    return ['#0070F325', '#0070F310'];
   }
 }
 
@@ -160,14 +160,16 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: 'hidden',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 12,
   },
   cardInner: {
     borderRadius: 16,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#2a2a2a',
   },
   spellHeader: {
     width: '100%',
@@ -239,6 +241,8 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 8,
     gap: 6,
+    borderWidth: 1,
+    borderColor: '#2a2a2a',
   },
   statText: {
     fontSize: 13,

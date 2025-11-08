@@ -14,32 +14,26 @@ export function formatNumber(num?: number): string {
 
 /**
  * Obtiene el color del rol del héroe
+ * Estilo PlayStation Store
  */
 export function getRoleColor(rol: string): string {
   if (rol === 'Tanque') return '#2ECC71';
   if (rol === 'Ofensivo') return '#E74C3C';
-  return '#3498DB'; // Soporte por defecto
+  return '#0070F3'; // Soporte - Azul PlayStation
 }
 
 /**
  * Obtiene los colores del gradiente para el héroe basado en su rol
+ * Estilo PlayStation Store con gradientes sutiles
  */
 export function getHeroGradient(roleColor: string, colorScheme?: 'light' | 'dark' | null): string[] {
-  // Crear variaciones del color del rol para el gradiente
+  // Crear variaciones del color del rol para el gradiente estilo PS Store
   const baseColor = roleColor;
   
-  // Para modo oscuro, usar colores más oscuros
-  if (colorScheme === 'dark') {
-    return [
-      baseColor + '40', // Más transparente
-      baseColor + '20', // Menos transparente
-    ];
-  }
-  
-  // Para modo claro, usar colores más vibrantes
+  // Para modo oscuro (PS Store style), usar gradientes más sutiles
   return [
-    baseColor + '30',
-    baseColor + '15',
+    baseColor + '25', // Más transparente
+    baseColor + '10', // Menos transparente
   ];
 }
 

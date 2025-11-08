@@ -2,6 +2,7 @@ import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
 import { Pressable, View, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
@@ -18,22 +19,9 @@ function TabBarIcon(props: {
   return <FontAwesome size={24} style={{ marginBottom: -3 }} {...props} />;
 }
 
-function CenteredTabBarButton({ children, onPress }: { children: React.ReactNode; onPress: () => void }) {
-  return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.centeredTabButton,
-        pressed && styles.centeredTabButtonPressed,
-      ]}
-    >
-      {children}
-    </Pressable>
-  );
-}
-
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const insets = useSafeAreaInsets();
 
   return (
     <Tabs
@@ -42,8 +30,12 @@ export default function TabLayout() {
         tabBarInactiveTintColor: Colors[colorScheme ?? 'light'].tabIconDefault,
         headerShown: useClientOnlyValue(false, true),
         tabBarStyle: {
-          backgroundColor: Colors[colorScheme ?? 'light'].background,
-          borderTopColor: Colors[colorScheme ?? 'light'].cardBorder,
+          backgroundColor: '#0a0a0a',
+          borderTopColor: '#2a2a2a',
+          borderTopWidth: 1,
+          height: 60 + insets.bottom,
+          paddingBottom: Math.max(insets.bottom, 8),
+          paddingTop: 8,
         },
       }}
     >
@@ -72,7 +64,13 @@ export default function TabLayout() {
           tabBarLabel: '',
           tabBarIcon: ({ color }) => <TabBarIcon name="search" color={color} centered />,
           tabBarButton: (props) => (
-            <CenteredTabBarButton onPress={props.onPress}>
+            <Pressable
+              onPress={props.onPress}
+              style={({ pressed }) => [
+                styles.centeredTabButton,
+                pressed && styles.centeredTabButtonPressed,
+              ]}
+            >
               <View style={styles.centeredIconContainer}>
                 <FontAwesome 
                   name="search" 
@@ -82,7 +80,7 @@ export default function TabLayout() {
                     : Colors[colorScheme ?? 'light'].tabIconDefault} 
                 />
               </View>
-            </CenteredTabBarButton>
+            </Pressable>
           ),
           headerShown: false,
         }}
