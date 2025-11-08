@@ -1,4 +1,4 @@
-import { Repository, FindOptionsWhere, FindManyOptions } from 'typeorm';
+import { Repository, FindOptionsWhere, FindManyOptions, DeepPartial } from 'typeorm';
 import { BaseEntity } from '../../infrastructure/persistence/entities/base.entity';
 
 export abstract class BaseService<T extends BaseEntity> {
@@ -16,14 +16,14 @@ export abstract class BaseService<T extends BaseEntity> {
     return this.repository.findOne({ where });
   }
 
-  async create(entity: Partial<T>): Promise<T> {
-    const newEntity = this.repository.create(entity);
+  async create(entity: DeepPartial<T>): Promise<T> {
+    const newEntity = this.repository.create(entity as DeepPartial<T>);
     const saved = await this.repository.save(newEntity);
     return Array.isArray(saved) ? saved[0] : saved;
   }
 
-  async update(id: number, entity: Partial<T>): Promise<T | null> {
-    await this.repository.update(id, entity);
+  async update(id: number, entity: DeepPartial<T>): Promise<T | null> {
+    await this.repository.update(id, entity as any);
     return this.findOne(id);
   }
 
