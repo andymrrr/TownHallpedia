@@ -1,30 +1,18 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import { HeroeService } from '@/core/api/Implementacion/HeroeService';
 import { ObtenerHeroesCasoUso } from '@/core/Domain/CasoUso/Heroe';
 import { Heroe } from '@/core/Domain/Model/Heroe/Heroe';
-import { IHeroeService } from '@/core/api/Interfaz/IHeroeService';
+import { Respuesta } from '@/core/Domain/Model/Comun/Respuesta';
+
+const servicio = new HeroeService();
+const casoUso = new ObtenerHeroesCasoUso(servicio);
 
 /**
  * Hook para obtener todos los héroes
- * Nota: Requiere que HeroeService esté implementado
  */
-export function useHeroes(heroeService?: IHeroeService) {
-  return useQuery<Heroe[], Error>({
+export const useHeroes = (): UseQueryResult<Respuesta<Heroe[]>, Error> => {
+  return useQuery({
     queryKey: ['heroes'],
-    queryFn: async () => {
-      if (!heroeService) {
-        throw new Error('HeroeService no está disponible aún');
-      }
-
-      const casoUso = new ObtenerHeroesCasoUso(heroeService);
-      const resultado = await casoUso.ejecutar();
-      
-      if (!resultado.completado || !resultado.datos) {
-        throw new Error(resultado.mensaje || 'Error al obtener héroes');
-      }
-      
-      return resultado.datos;
-    },
-    enabled: heroeService !== undefined,
+    queryFn: () => casoUso.ejecutar(),
   });
-}
-
+};

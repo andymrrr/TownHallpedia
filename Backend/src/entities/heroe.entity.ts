@@ -1,6 +1,7 @@
-import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, Index, OneToMany } from 'typeorm';
 import { BaseEntity } from './base.entity';
-import { Parametro } from './parametro.entity';
+import { Recurso } from './recurso.entity';
+import { Habilidad } from './habilidad.entity';
 
 @Entity('heroe')
 export class Heroe extends BaseEntity {
@@ -10,13 +11,25 @@ export class Heroe extends BaseEntity {
   @Column({ name: 'descripcion', type: 'text', nullable: true })
   descripcion: string;
 
-  @Column({ name: 'tipo_recurso_parametro_id', type: 'int', nullable: true })
-  tipoRecursoParametroId: number;
+  @Column({ name: 'tipo_recurso_id', type: 'int', nullable: true })
+  tipoRecursoId: number;
 
-  @ManyToOne(() => Parametro)
-  @JoinColumn({ name: 'tipo_recurso_parametro_id' })
-  tipoRecursoParametro: Parametro;
+  @ManyToOne(() => Recurso, { onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'tipo_recurso_id' })
+  tipoRecurso: Recurso;
 
   @Column({ name: 'portada', type: 'varchar', length: 300, nullable: true })
   portada: string;
+
+  @Column({ name: 'nivel_maximo', type: 'int', nullable: true })
+  nivelMaximo: number;
+
+  @Column({ name: 'nivel_ayuntamiento_desbloqueo', type: 'int', nullable: true })
+  nivelAyuntamientoDesbloqueo: number;
+
+  @Column({ name: 'vida', type: 'int', nullable: true })
+  vida: number;
+
+  @OneToMany(() => Habilidad, (habilidad) => habilidad.heroe)
+  habilidades: Habilidad[];
 }

@@ -93,7 +93,7 @@ export const AyuntamientoDetailInfo: React.FC<AyuntamientoDetailInfoProps> = ({ 
         <InfoRow
           icon="tag"
           label="Tipo de Recurso"
-          value={data.tipoRecurso || 'N/A'}
+          value={data.tipoRecursoNombre || 'N/A'}
           colors={colors}
         />
       </View>

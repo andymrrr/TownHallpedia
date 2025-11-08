@@ -76,7 +76,6 @@ export class AyuntamientoService implements IAyuntamientoService {
     try {
       const url = `${this.baseUrl}/${id}/desbloqueos`;
       const response = await Api.get<Ayuntamiento>(url);
-      console.log(response.data);
       return {
         completado: true,
         datos: response.data

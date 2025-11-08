@@ -1,0 +1,1 @@
+export { useHeroesListViewModel } from './HeroesListViewModel';

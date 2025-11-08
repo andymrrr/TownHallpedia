@@ -55,7 +55,8 @@ export class TropaService extends BaseService<Tropa> {
       throw new Error(`Ya existe una tropa con el nombre ${createDto.nombre}`);
     }
 
-    return this.create(createDto);
+    // Mapear DTO a entidad (ya está correcto porque los tipos coinciden)
+    return this.create(createDto as Partial<Tropa>);
   }
 
   async updateTropa(id: number, updateDto: UpdateTropaDto): Promise<Tropa | null> {
@@ -67,6 +68,7 @@ export class TropaService extends BaseService<Tropa> {
       }
     }
 
-    return this.update(id, updateDto);
+    // Mapear DTO a entidad (ya está correcto porque los tipos coinciden)
+    return this.update(id, updateDto as Partial<Tropa>);
   }
 }

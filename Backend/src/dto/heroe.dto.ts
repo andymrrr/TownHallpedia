@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsOptional, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, MaxLength, IsNumber, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BaseDto } from './base.dto';
@@ -14,15 +14,37 @@ export class CreateHeroeDto extends BaseDto {
   descripcion?: string;
 
   @IsOptional()
-  @IsString()
-  @MaxLength(20)
-  tipoRecurso?: string;
+  @IsNumber()
+  @Min(1)
+  @Type(() => Number)
+  tipoRecursoId?: number;
 
   @ApiPropertyOptional({ description: 'URL de la imagen de portada', maxLength: 300 })
   @IsOptional()
   @IsString()
   @MaxLength(300)
   portada?: string;
+
+  @ApiPropertyOptional({ description: 'Nivel máximo que puede alcanzar el héroe', minimum: 1 })
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Type(() => Number)
+  nivelMaximo?: number;
+
+  @ApiPropertyOptional({ description: 'Nivel de ayuntamiento donde se desbloquea', minimum: 1 })
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Type(() => Number)
+  nivelAyuntamientoDesbloqueo?: number;
+
+  @ApiPropertyOptional({ description: 'Vida o salud del héroe', minimum: 1 })
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Type(() => Number)
+  vida?: number;
 }
 
 export class UpdateHeroeDto {
@@ -50,15 +72,37 @@ export class UpdateHeroeDto {
     example: 'Elixir Oscuro',
   })
   @IsOptional()
-  @IsString()
-  @MaxLength(20)
-  tipoRecurso?: string;
+  @IsNumber()
+  @Min(1)
+  @Type(() => Number)
+  tipoRecursoId?: number;
 
   @ApiPropertyOptional({ description: 'URL de la imagen de portada', maxLength: 300 })
   @IsOptional()
   @IsString()
   @MaxLength(300)
   portada?: string;
+
+  @ApiPropertyOptional({ description: 'Nivel máximo que puede alcanzar el héroe', minimum: 1 })
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Type(() => Number)
+  nivelMaximo?: number;
+
+  @ApiPropertyOptional({ description: 'Nivel de ayuntamiento donde se desbloquea', minimum: 1 })
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Type(() => Number)
+  nivelAyuntamientoDesbloqueo?: number;
+
+  @ApiPropertyOptional({ description: 'Vida o salud del héroe', minimum: 1 })
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Type(() => Number)
+  vida?: number;
 }
 
 export class HeroeResponseDto extends BaseDto {
@@ -67,6 +111,9 @@ export class HeroeResponseDto extends BaseDto {
 
   nombre: string;
   descripcion?: string;
-  tipoRecurso?: string;
+  tipoRecursoId?: number;
   portada?: string;
+  nivelMaximo?: number;
+  nivelAyuntamientoDesbloqueo?: number;
+  vida?: number;
 }

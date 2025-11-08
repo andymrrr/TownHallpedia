@@ -1,8 +1,4 @@
-export interface DesbloqueoItem {
-  id: number;
-  nombre: string;
-  nivel: number;
-}
+import { DesbloqueoItem } from "./DesbloqueoItem";
 
 export interface AyuntamientoDetailData {
   nivel: number;
@@ -11,10 +7,11 @@ export interface AyuntamientoDetailData {
   capacidadOscuro?: number;
   tiempoConstruccion?: number;
   costoMejora?: number;
-  tipoRecurso?: string;
+  tipoRecursoId?: number;
+  tipoRecursoNombre?: string;
   imagenUrl?: string;
   heroes: DesbloqueoItem[];
   tropas: DesbloqueoItem[];
   hechizos: DesbloqueoItem[];
+  animales: DesbloqueoItem[];
 }
-

@@ -26,10 +26,23 @@ export class HeroeService extends BaseService<Heroe> {
     return this.findOneBy({ nombre } as any);
   }
 
+  async findOne(id: number): Promise<Heroe | null> {
+    return this.heroeRepository.findOne({
+      where: { id } as any,
+      relations: ['tipoRecurso', 'habilidades'],
+    });
+  }
+
+  async findAll(): Promise<Heroe[]> {
+    return this.heroeRepository.find({
+      relations: ['tipoRecurso', 'habilidades'],
+    });
+  }
+
   async findWithRelations(id: number): Promise<Heroe | null> {
     return this.heroeRepository.findOne({
       where: { id } as any,
-      relations: ['nivelesDetalle', 'desbloqueos'],
+      relations: ['tipoRecurso', 'habilidades', 'nivelesDetalle', 'desbloqueos'],
     });
   }
 
@@ -48,7 +61,18 @@ export class HeroeService extends BaseService<Heroe> {
       throw new Error(`Ya existe un héroe con el nombre ${createDto.nombre}`);
     }
 
-    return this.create(createDto);
+    // Mapear DTO a entidad
+    const heroeData: Partial<Heroe> = {
+      nombre: createDto.nombre,
+      descripcion: createDto.descripcion,
+      tipoRecursoId: createDto.tipoRecursoId,
+      portada: createDto.portada,
+      nivelMaximo: createDto.nivelMaximo,
+      nivelAyuntamientoDesbloqueo: createDto.nivelAyuntamientoDesbloqueo,
+      vida: createDto.vida,
+    };
+
+    return this.create(heroeData);
   }
 
   async updateHeroe(id: number, updateDto: UpdateHeroeDto): Promise<Heroe | null> {
@@ -60,6 +84,17 @@ export class HeroeService extends BaseService<Heroe> {
       }
     }
 
-    return this.update(id, updateDto);
+    // Mapear DTO a entidad
+    const heroeData: Partial<Heroe> = {
+      nombre: updateDto.nombre,
+      descripcion: updateDto.descripcion,
+      tipoRecursoId: updateDto.tipoRecursoId,
+      portada: updateDto.portada,
+      nivelMaximo: updateDto.nivelMaximo,
+      nivelAyuntamientoDesbloqueo: updateDto.nivelAyuntamientoDesbloqueo,
+      vida: updateDto.vida,
+    };
+
+    return this.update(id, heroeData);
   }
 }

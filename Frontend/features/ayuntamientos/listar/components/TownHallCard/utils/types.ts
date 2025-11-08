@@ -5,6 +5,7 @@ export interface TownHallData {
   capacidadAlmacenOscuro?: number;
   tiempoConstruccionHoras?: number;
   costoMejora?: number;
-  tipoRecurso?: string;
+  tipoRecursoId?: number;
+  tipoRecursoNombre?: string; // Nombre del recurso (extraído de tipoRecurso.nombre si existe)
   portada?: string;
 }

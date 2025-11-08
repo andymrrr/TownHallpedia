@@ -11,7 +11,8 @@ export interface AyuntamientoListItem {
   capacidadOscuro?: number;
   tiempoConstruccion?: number;
   costoMejora?: number;
-  tipoRecurso?: string;
+  tipoRecursoId?: number;
+  tipoRecursoNombre?: string;
   imagenUrl?: string;
 }
 
@@ -40,7 +41,8 @@ function mapToListItem(a: Ayuntamiento): AyuntamientoListItem {
     capacidadOscuro: a.capacidadAlmacenOscuro,
     tiempoConstruccion: a.tiempoConstruccionHoras,
     costoMejora: a.costoMejora,
-    tipoRecurso: a.tipoRecurso,
+    tipoRecursoId: a.tipoRecursoId,
+    tipoRecursoNombre: a.tipoRecurso?.nombre || undefined,
     imagenUrl: a.portada,
   };
 }

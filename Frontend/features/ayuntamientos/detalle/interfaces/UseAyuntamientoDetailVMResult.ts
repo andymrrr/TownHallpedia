@@ -7,7 +7,7 @@ export interface UseAyuntamientoDetailVMResult {
   refetch: () => void;
   activeTab: 'info' | 'desbloqueos';
   setActiveTab: (tab: 'info' | 'desbloqueos') => void;
-  activeSubTab: 'heroes' | 'tropas' | 'hechizos';
-  setActiveSubTab: (tab: 'heroes' | 'tropas' | 'hechizos') => void;
+  activeSubTab: 'heroes' | 'tropas' | 'hechizos' | 'animales';
+  setActiveSubTab: (tab: 'heroes' | 'tropas' | 'hechizos' | 'animales') => void;
 }
 

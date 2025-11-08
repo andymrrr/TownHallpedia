@@ -1,4 +1,10 @@
-import { DesbloqueoAyuntamiento } from './DesbloqueoAyuntamiento';
+import { DesbloqueosAyuntamiento } from "./DesbloqueosAyuntamiento";
+
+export interface Recurso {
+  id: number;
+  nombre: string;
+  descripcion?: string;
+}
 
 export interface Ayuntamiento {
   id: number;
@@ -8,8 +14,9 @@ export interface Ayuntamiento {
   capacidadAlmacenOscuro?: number;
   tiempoConstruccionHoras?: number;
   costoMejora?: number;
-  tipoRecurso?: string;
+  tipoRecursoId?: number;
+  tipoRecurso?: Recurso;
   portada?: string;
-  desbloqueos?: DesbloqueoAyuntamiento[];
+  desbloqueos?: DesbloqueosAyuntamiento;
 }
 

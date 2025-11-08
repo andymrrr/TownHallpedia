@@ -1,8 +1,6 @@
-import { Entity, Column, OneToMany, ManyToOne, JoinColumn, Unique } from 'typeorm';
+import { Entity, Column, OneToMany, ManyToOne, JoinColumn, Unique, Index } from 'typeorm';
 import { BaseEntity } from './base.entity';
-import { NivelDetalle } from './nivel-detalle.entity';
-import { DesbloqueosAyuntamiento } from './desbloqueos-ayuntamiento.entity';
-import { Parametro } from './parametro.entity';
+import { Recurso } from './recurso.entity';
 
 @Entity('ayuntamiento')
 @Unique(['nivel'])
@@ -25,19 +23,13 @@ export class Ayuntamiento extends BaseEntity {
   @Column({ name: 'costo_mejora', type: 'int', nullable: true })
   costoMejora: number;
 
-  @Column({ name: 'tipo_recurso_parametro_id', type: 'int', nullable: true })
-  tipoRecursoParametroId: number;
+  @Column({ name: 'tipo_recurso_id', type: 'int', nullable: true })
+  tipoRecursoId: number;
 
-  @ManyToOne(() => Parametro)
-  @JoinColumn({ name: 'tipo_recurso_parametro_id' })
-  tipoRecursoParametro: Parametro;
+  @ManyToOne(() => Recurso, { onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'tipo_recurso_id' })
+  tipoRecurso: Recurso;
 
   @Column({ name: 'portada', type: 'varchar', length: 300, nullable: true })
   portada: string;
-
-  @OneToMany(() => NivelDetalle, (nivelDetalle) => nivelDetalle.desbloqueaEnAyuntamiento)
-  nivelesDetalle: NivelDetalle[];
-
-  @OneToMany(() => DesbloqueosAyuntamiento, (desbloqueo) => desbloqueo.ayuntamiento)
-  desbloqueos: DesbloqueosAyuntamiento[];
 }

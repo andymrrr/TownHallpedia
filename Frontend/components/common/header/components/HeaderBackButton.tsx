@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { BACK_BUTTON_SIZE } from '../constants';
 
 interface HeaderBackButtonProps {
@@ -14,9 +15,22 @@ export function HeaderBackButton({
   iconColor,
   iconSize,
 }: HeaderBackButtonProps) {
+  const router = useRouter();
+
+  const handlePress = () => {
+    if (onPress) {
+      onPress();
+    } else {
+      // Si no se proporciona onPress, usar el router para ir hacia atrás
+      if (router.canGoBack()) {
+        router.back();
+      }
+    }
+  };
+
   return (
     <Pressable
-      onPress={onPress}
+      onPress={handlePress}
       style={({ pressed }) => [
         styles.backButton,
         {

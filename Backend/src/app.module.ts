@@ -12,7 +12,6 @@ import {
   TropaModule,
   HeroeModule,
   HechizoModule,
-  NivelDetalleModule,
 } from './modules';
 import { SeedModule } from './seed/seed.module';
 
@@ -35,7 +34,6 @@ import { SeedModule } from './seed/seed.module';
     TropaModule,
     HeroeModule,
     HechizoModule,
-    NivelDetalleModule,
     SeedModule,
   ],
   controllers: [AppController],

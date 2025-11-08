@@ -67,12 +67,12 @@ export class CreateAyuntamientoDto extends BaseDto {
   costoMejora?: number;
 
   @ApiPropertyOptional({
-    description: 'Tipo de recurso requerido para la mejora',
-    example: 'Oro',
+    description: 'ID del tipo de recurso requerido para la mejora',
+    example: 1,
   })
   @IsOptional()
-  @IsString()
-  tipoRecurso?: string;
+  @IsNumber()
+  tipoRecursoId?: number;
 
   @ApiPropertyOptional({
     description: 'URL de la imagen de portada',
@@ -147,12 +147,12 @@ export class UpdateAyuntamientoDto {
   costoMejora?: number;
 
   @ApiPropertyOptional({
-    description: 'Tipo de recurso requerido para la mejora',
-    example: 'Oro',
+    description: 'ID del tipo de recurso requerido para la mejora',
+    example: 1,
   })
   @IsOptional()
-  @IsString()
-  tipoRecurso?: string;
+  @IsNumber()
+  tipoRecursoId?: number;
 
   @ApiPropertyOptional({
     description: 'URL de la imagen de portada',
@@ -214,10 +214,10 @@ export class AyuntamientoResponseDto extends BaseDto {
   costoMejora?: number;
 
   @ApiPropertyOptional({
-    description: 'Tipo de recurso requerido para la mejora',
-    example: 'Oro',
+    description: 'ID del tipo de recurso requerido para la mejora',
+    example: 1,
   })
-  tipoRecurso?: string;
+  tipoRecursoId?: number;
 
   @ApiPropertyOptional({
     description: 'URL de la imagen de portada',

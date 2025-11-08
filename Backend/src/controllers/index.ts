@@ -3,5 +3,4 @@ export * from './edificio.controller';
 export * from './tropa.controller';
 export * from './heroe.controller';
 export * from './hechizo.controller';
-export * from './nivel-detalle.controller';
-export * from './desbloqueos-ayuntamiento.controller';
+// Controladores de nivel-detalle y desbloqueos-ayuntamiento eliminados - ahora se manejan mediante las entidades separadas

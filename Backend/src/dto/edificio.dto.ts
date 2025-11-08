@@ -1,7 +1,8 @@
-import { IsNotEmpty, IsString, IsOptional, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, MaxLength, IsEnum } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BaseDto } from './base.dto';
+import { TipoEdificio } from '../entities/edificio.entity';
 
 export class CreateEdificioDto extends BaseDto {
   @IsNotEmpty()
@@ -10,9 +11,8 @@ export class CreateEdificioDto extends BaseDto {
   nombre: string;
 
   @IsOptional()
-  @IsString()
-  @MaxLength(50)
-  tipo?: string;
+  @IsEnum(TipoEdificio)
+  tipo?: TipoEdificio;
 
   @IsOptional()
   @IsString()
@@ -42,9 +42,8 @@ export class UpdateEdificioDto {
     example: 'Defensa',
   })
   @IsOptional()
-  @IsString()
-  @MaxLength(50)
-  tipo?: string;
+  @IsEnum(TipoEdificio)
+  tipo?: TipoEdificio;
 
   @ApiPropertyOptional({
     description: 'Descripción del edificio',
@@ -66,7 +65,7 @@ export class EdificioResponseDto extends BaseDto {
   id: number;
 
   nombre: string;
-  tipo?: string;
+  tipo?: TipoEdificio;
   descripcion?: string;
   portada?: string;
 }

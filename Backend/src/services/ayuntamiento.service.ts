@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { PaginationQueryDto, PaginationVm } from '../common/pagination/pagination.dto';
 import { paginateVmQueryBuilder } from '../common/pagination/paginate-typeorm';
 import { Ayuntamiento } from '../entities/ayuntamiento.entity';
-import { Heroe } from '../entities/heroe.entity';
-import { Tropa } from '../entities/tropa.entity';
-import { Hechizo } from '../entities/hechizo.entity';
-import { TipoEntidad } from '../entities/nivel-detalle.entity';
+import { DesbloqueosAyuntamientoHeroe } from '../entities/desbloqueos-ayuntamiento-heroe.entity';
+import { DesbloqueosAyuntamientoTropa } from '../entities/desbloqueos-ayuntamiento-tropa.entity';
+import { DesbloqueosAyuntamientoHechizo } from '../entities/desbloqueos-ayuntamiento-hechizo.entity';
+import { DesbloqueosAyuntamientoEdificio } from '../entities/desbloqueos-ayuntamiento-edificio.entity';
+import { DesbloqueosAyuntamientoAnimal } from '../entities/desbloqueos-ayuntamiento-animal.entity';
 import { BaseService } from './base.service';
 import { CreateAyuntamientoDto, UpdateAyuntamientoDto } from '../dto/ayuntamiento.dto';
 
@@ -16,12 +17,16 @@ export class AyuntamientoService extends BaseService<Ayuntamiento> {
   constructor(
     @InjectRepository(Ayuntamiento)
     private readonly ayuntamientoRepository: Repository<Ayuntamiento>,
-    @InjectRepository(Heroe)
-    private readonly heroeRepository: Repository<Heroe>,
-    @InjectRepository(Tropa)
-    private readonly tropaRepository: Repository<Tropa>,
-    @InjectRepository(Hechizo)
-    private readonly hechizoRepository: Repository<Hechizo>,
+    @InjectRepository(DesbloqueosAyuntamientoHeroe)
+    private readonly desbloqueosHeroeRepository: Repository<DesbloqueosAyuntamientoHeroe>,
+    @InjectRepository(DesbloqueosAyuntamientoTropa)
+    private readonly desbloqueosTropaRepository: Repository<DesbloqueosAyuntamientoTropa>,
+    @InjectRepository(DesbloqueosAyuntamientoHechizo)
+    private readonly desbloqueosHechizoRepository: Repository<DesbloqueosAyuntamientoHechizo>,
+    @InjectRepository(DesbloqueosAyuntamientoEdificio)
+    private readonly desbloqueosEdificioRepository: Repository<DesbloqueosAyuntamientoEdificio>,
+    @InjectRepository(DesbloqueosAyuntamientoAnimal)
+    private readonly desbloqueosAnimalRepository: Repository<DesbloqueosAyuntamientoAnimal>,
   ) {
     super(ayuntamientoRepository);
   }
@@ -30,68 +35,147 @@ export class AyuntamientoService extends BaseService<Ayuntamiento> {
     return this.findOneBy({ nivel } as any);
   }
 
-  async findByTipoRecurso(tipoRecurso: string): Promise<Ayuntamiento[]> {
+  async findByTipoRecurso(tipoRecursoId: number): Promise<Ayuntamiento[]> {
     return this.ayuntamientoRepository.find({
-      where: { tipoRecurso } as any,
+      where: { tipoRecursoId },
+      relations: ['tipoRecurso'],
     });
   }
 
   async findWithDesbloqueos(id: number): Promise<Ayuntamiento | null> {
-    return this.ayuntamientoRepository.findOne({
-      where: { id } as any,
-      relations: ['desbloqueos', 'nivelesDetalle'],
+    const ayuntamiento = await this.ayuntamientoRepository.findOne({
+      where: { id },
+      relations: ['tipoRecurso'],
     });
+
+    if (!ayuntamiento) {
+      return null;
+    }
+
+    // Obtener todos los desbloqueos de todos los tipos
+    const [desbloqueosHeroes, desbloqueosTropas, desbloqueosHechizos, desbloqueosEdificios, desbloqueosAnimales] = await Promise.all([
+      this.desbloqueosHeroeRepository.find({ where: { ayuntamientoId: id }, relations: ['heroe'] }),
+      this.desbloqueosTropaRepository.find({ where: { ayuntamientoId: id }, relations: ['tropa'] }),
+      this.desbloqueosHechizoRepository.find({ where: { ayuntamientoId: id }, relations: ['hechizo'] }),
+      this.desbloqueosEdificioRepository.find({ where: { ayuntamientoId: id }, relations: ['edificio'] }),
+      this.desbloqueosAnimalRepository.find({ where: { ayuntamientoId: id }, relations: ['animal'] }),
+    ]);
+
+    return {
+      ...ayuntamiento,
+      desbloqueos: {
+        heroes: desbloqueosHeroes,
+        tropas: desbloqueosTropas,
+        hechizos: desbloqueosHechizos,
+        edificios: desbloqueosEdificios,
+        animales: desbloqueosAnimales,
+      },
+    } as any;
   }
 
   async findByNivelWithDesbloqueos(nivel: number): Promise<Ayuntamiento | null> {
     const ayuntamiento = await this.ayuntamientoRepository.findOne({
-      where: { nivel } as any,
-      relations: ['desbloqueos', 'desbloqueos.tipoEntidadParametro', 'nivelesDetalle', 'nivelesDetalle.tipoEntidadParametro'],
+      where: { nivel },
+      relations: ['tipoRecurso'],
     });
 
-    if (!ayuntamiento || !ayuntamiento.desbloqueos) {
-      return ayuntamiento;
+    if (!ayuntamiento) {
+      return null;
     }
 
-    // Para cada desbloqueo, buscar el nivelDetalle correspondiente y el nombre de la entidad
-    const desbloqueosConNivel = await Promise.all(
-      ayuntamiento.desbloqueos.map(async (desbloqueo) => {
-        const nivelDetalle = ayuntamiento.nivelesDetalle?.find(
-          (nd) => nd.entidadId === desbloqueo.entidadId && 
-                 nd.tipoEntidadParametroId === desbloqueo.tipoEntidadParametroId
-        );
-        
-        const tipoEntidad = desbloqueo.tipoEntidadParametro?.valor?.toUpperCase() || '';
-        let entidadNombre: string | undefined;
+    // Obtener todos los ayuntamientos hasta el nivel actual (para desbloqueos acumulativos)
+    const ayuntamientosHastaNivel = await this.ayuntamientoRepository.find({
+      where: {},
+    });
+    const nivelesHastaActual = ayuntamientosHastaNivel
+      .filter(a => a.nivel <= nivel)
+      .map(a => a.id);
 
-        // Obtener el nombre de la entidad según su tipo
-        try {
-          if (tipoEntidad.includes('HEROE') || tipoEntidad === 'HEROE') {
-            const heroe = await this.heroeRepository.findOne({ where: { id: desbloqueo.entidadId } as any });
-            entidadNombre = heroe?.nombre;
-          } else if (tipoEntidad.includes('TROPA') || tipoEntidad === 'TROPA') {
-            const tropa = await this.tropaRepository.findOne({ where: { id: desbloqueo.entidadId } as any });
-            entidadNombre = tropa?.nombre;
-          } else if (tipoEntidad.includes('HECHIZO') || tipoEntidad === 'HECHIZO') {
-            const hechizo = await this.hechizoRepository.findOne({ where: { id: desbloqueo.entidadId } as any });
-            entidadNombre = hechizo?.nombre;
+    // Obtener todos los desbloqueos acumulativos hasta este nivel
+    const [todosDesbloqueosHeroes, todosDesbloqueosTropas, todosDesbloqueosHechizos, todosDesbloqueosEdificios, todosDesbloqueosAnimales] = await Promise.all([
+      this.desbloqueosHeroeRepository.find({ 
+        where: { ayuntamientoId: In(nivelesHastaActual) },
+        relations: ['heroe', 'ayuntamiento'],
+      }),
+      this.desbloqueosTropaRepository.find({ 
+        where: { ayuntamientoId: In(nivelesHastaActual) },
+        relations: ['tropa', 'ayuntamiento'],
+      }),
+      this.desbloqueosHechizoRepository.find({ 
+        where: { ayuntamientoId: In(nivelesHastaActual) },
+        relations: ['hechizo', 'ayuntamiento'],
+      }),
+      this.desbloqueosEdificioRepository.find({ 
+        where: { ayuntamientoId: In(nivelesHastaActual) },
+        relations: ['edificio', 'ayuntamiento'],
+      }),
+      this.desbloqueosAnimalRepository.find({ 
+        where: { ayuntamientoId: In(nivelesHastaActual) },
+        relations: ['animal', 'ayuntamiento'],
+      }),
+    ]);
+
+    // Agrupar desbloqueos por entidad y calcular rangos acumulativos
+    const procesarDesbloqueos = <T extends { heroeId?: number; tropaId?: number; hechizoId?: number; edificioId?: number; animalId?: number; nivelMinimoDisponible: number; nivelMaximoDisponible: number; esNuevo: boolean; ayuntamiento: { nivel: number } }>(
+      desbloqueos: T[],
+      tipo: 'heroe' | 'tropa' | 'hechizo' | 'edificio' | 'animal'
+    ) => {
+      const agrupados = new Map<number, T[]>();
+      
+      // Agrupar por entidad
+      desbloqueos.forEach(d => {
+        const entidadId = d.heroeId || d.tropaId || d.hechizoId || d.edificioId || d.animalId;
+        if (entidadId) {
+          if (!agrupados.has(entidadId)) {
+            agrupados.set(entidadId, []);
           }
-        } catch (error) {
-          console.error(`Error al obtener nombre de entidad ${desbloqueo.entidadId}:`, error);
+          agrupados.get(entidadId)!.push(d);
         }
+      });
+
+      // Para cada entidad, calcular el rango acumulativo y determinar si es nuevo
+      return Array.from(agrupados.entries()).map(([entidadId, desbloqueosEntidad]) => {
+        const desbloqueosHastaNivel = desbloqueosEntidad.filter(d => d.ayuntamiento.nivel <= nivel);
+        const esNuevoEnEsteNivel = desbloqueosEntidad.some(d => d.ayuntamiento.nivel === nivel && d.esNuevo);
         
+        // Calcular rango acumulativo
+        const nivelesMinimos = desbloqueosHastaNivel.map(d => d.nivelMinimoDisponible);
+        const nivelesMaximos = desbloqueosHastaNivel.map(d => d.nivelMaximoDisponible);
+        const nivelMinimo = Math.min(...nivelesMinimos);
+        const nivelMaximo = Math.max(...nivelesMaximos);
+
+        // Obtener el desbloqueo más reciente para la entidad completa
+        const desbloqueoMasReciente = desbloqueosHastaNivel.sort((a, b) => 
+          b.ayuntamiento.nivel - a.ayuntamiento.nivel
+        )[0];
+
         return {
-          ...desbloqueo,
-          nivel: nivelDetalle?.nivel || 1, // Default nivel 1 si no se encuentra
-          entidadNombre: entidadNombre || undefined,
+          ...desbloqueoMasReciente,
+          nivelMinimo,
+          nivelMaximo,
+          esNuevoDesbloqueo: esNuevoEnEsteNivel,
         };
-      })
-    );
+      });
+    };
+
+    const heroes = procesarDesbloqueos(todosDesbloqueosHeroes, 'heroe');
+    const tropas = procesarDesbloqueos(todosDesbloqueosTropas, 'tropa');
+    const hechizos = procesarDesbloqueos(todosDesbloqueosHechizos, 'hechizo');
+    const edificios = procesarDesbloqueos(todosDesbloqueosEdificios, 'edificio');
+    const animales = procesarDesbloqueos(todosDesbloqueosAnimales, 'animal');
 
     return {
       ...ayuntamiento,
-      desbloqueos: desbloqueosConNivel,
-    };
+      desbloqueos: {
+        heroes,
+        tropas,
+        hechizos,
+        edificios,
+        animales,
+        // Mantener compatibilidad con formato anterior (array plano)
+        todos: [...heroes, ...tropas, ...hechizos, ...edificios, ...animales],
+      },
+    } as any;
   }
 
   async paginate(query: PaginationQueryDto): Promise<PaginationVm<Ayuntamiento>> {

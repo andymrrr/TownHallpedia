@@ -1,7 +1,8 @@
-import { IsNotEmpty, IsString, IsOptional, IsNumber, MaxLength, Min } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, IsNumber, MaxLength, Min, IsEnum } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BaseDto } from './base.dto';
+import { TipoTropa } from '../entities/tropa.entity';
 
 export class CreateTropaDto extends BaseDto {
   @IsNotEmpty()
@@ -10,9 +11,8 @@ export class CreateTropaDto extends BaseDto {
   nombre: string;
 
   @IsOptional()
-  @IsString()
-  @MaxLength(50)
-  tipo?: string;
+  @IsEnum(TipoTropa)
+  tipo?: TipoTropa;
 
   @IsOptional()
   @IsNumber()
@@ -52,9 +52,8 @@ export class UpdateTropaDto {
     example: 'Normal',
   })
   @IsOptional()
-  @IsString()
-  @MaxLength(50)
-  tipo?: string;
+  @IsEnum(TipoTropa)
+  tipo?: TipoTropa;
 
   @ApiPropertyOptional({
     description: 'Espacio que ocupa en el ejército',
@@ -96,7 +95,7 @@ export class TropaResponseDto extends BaseDto {
   id: number;
 
   nombre: string;
-  tipo?: string;
+  tipo?: TipoTropa;
 
   @Type(() => Number)
   espacioEjercito?: number;

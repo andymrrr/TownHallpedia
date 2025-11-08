@@ -5,8 +5,9 @@
 // Interfaces
 export * from './interfaces';
 
-// Parámetros
-export { PARAMETROS_SEED } from './parametros.seed';
+// Recursos
+export { RECURSOS_SEED } from './recursos.seed';
+export type { RecursoSeed } from './recursos.seed';
 
 // Ayuntamientos
 export { AYUNTAMIENTOS_NIVEL_MAXIMO, AYUNTAMIENTOS_DETALLES } from './ayuntamientos.seed';

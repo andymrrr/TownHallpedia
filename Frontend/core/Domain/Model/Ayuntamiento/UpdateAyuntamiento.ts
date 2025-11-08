@@ -5,7 +5,7 @@ export interface UpdateAyuntamiento {
   capacidadAlmacenOscuro?: number;
   tiempoConstruccionHoras?: number;
   costoMejora?: number;
-  tipoRecurso?: string;
+  tipoRecursoId?: number;
   portada?: string;
 }
 

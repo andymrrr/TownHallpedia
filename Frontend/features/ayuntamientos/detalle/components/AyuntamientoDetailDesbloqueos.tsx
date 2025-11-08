@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet, Pressable, Image, ImageSourcePropType } from 'react-native';
 import { Text } from '@/components/Themed';
 import { FontAwesome } from '@expo/vector-icons';
 import { useColorScheme } from '@/components/useColorScheme';
@@ -10,19 +10,62 @@ interface AyuntamientoDetailDesbloqueosProps {
   heroes: DesbloqueoItem[];
   tropas: DesbloqueoItem[];
   hechizos: DesbloqueoItem[];
-  activeSubTab: 'heroes' | 'tropas' | 'hechizos';
-  onSubTabChange: (tab: 'heroes' | 'tropas' | 'hechizos') => void;
+  animales: DesbloqueoItem[];
+  activeSubTab: 'heroes' | 'tropas' | 'hechizos' | 'animales';
+  onSubTabChange: (tab: 'heroes' | 'tropas' | 'hechizos' | 'animales') => void;
 }
 
 export const AyuntamientoDetailDesbloqueos: React.FC<AyuntamientoDetailDesbloqueosProps> = ({
   heroes,
   tropas,
   hechizos,
+  animales,
   activeSubTab,
   onSubTabChange,
 }) => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+
+  // Colores mejorados para cada categoría
+  const categoryColors = {
+    heroes: '#FF6B35', // Naranja (sin cambios)
+    tropas: '#4A90E2', // Azul (sin cambios)
+    hechizos: '#00B4D8', // Azul claro/ciano (cambió del morado)
+    animales: '#10B981', // Verde esmeralda
+  };
+
+  const getCurrentItems = () => {
+    switch (activeSubTab) {
+      case 'heroes':
+        return heroes;
+      case 'tropas':
+        return tropas;
+      case 'hechizos':
+        return hechizos;
+      case 'animales':
+        return animales;
+      default:
+        return [];
+    }
+  };
+
+  const getCurrentCount = () => {
+    switch (activeSubTab) {
+      case 'heroes':
+        return heroes.length;
+      case 'tropas':
+        return tropas.length;
+      case 'hechizos':
+        return hechizos.length;
+      case 'animales':
+        return animales.length;
+      default:
+        return 0;
+    }
+  };
+
+  const currentItems = getCurrentItems();
+  const currentColor = categoryColors[activeSubTab];
 
   return (
     <>
@@ -34,7 +77,7 @@ export const AyuntamientoDetailDesbloqueos: React.FC<AyuntamientoDetailDesbloque
           count={heroes.length}
           isActive={activeSubTab === 'heroes'}
           onPress={() => onSubTabChange('heroes')}
-          color="#FF6B35"
+          color={categoryColors.heroes}
           colors={colors}
         />
         <SubTabButton
@@ -43,7 +86,7 @@ export const AyuntamientoDetailDesbloqueos: React.FC<AyuntamientoDetailDesbloque
           count={tropas.length}
           isActive={activeSubTab === 'tropas'}
           onPress={() => onSubTabChange('tropas')}
-          color="#4A90E2"
+          color={categoryColors.tropas}
           colors={colors}
         />
         <SubTabButton
@@ -52,33 +95,40 @@ export const AyuntamientoDetailDesbloqueos: React.FC<AyuntamientoDetailDesbloque
           count={hechizos.length}
           isActive={activeSubTab === 'hechizos'}
           onPress={() => onSubTabChange('hechizos')}
-          color="#7209B7"
+          color={categoryColors.hechizos}
+          colors={colors}
+        />
+        <SubTabButton
+          label="Animales"
+          icon="paw"
+          count={animales.length}
+          isActive={activeSubTab === 'animales'}
+          onPress={() => onSubTabChange('animales')}
+          color={categoryColors.animales}
           colors={colors}
         />
       </View>
 
       {/* Contenido según sub-tab activo */}
-      <View style={[styles.section, { backgroundColor: colors.card }]}>
-        {activeSubTab === 'heroes' && heroes.length > 0 && (
-          <UnlockList items={heroes} icon="star" color="#FF6B35" colors={colors} />
-        )}
-        {activeSubTab === 'tropas' && tropas.length > 0 && (
-          <UnlockList items={tropas} icon="shield" color="#4A90E2" colors={colors} />
-        )}
-        {activeSubTab === 'hechizos' && hechizos.length > 0 && (
-          <UnlockList items={hechizos} icon="bolt" color="#7209B7" colors={colors} />
-        )}
-        {((activeSubTab === 'heroes' && heroes.length === 0) ||
-          (activeSubTab === 'tropas' && tropas.length === 0) ||
-          (activeSubTab === 'hechizos' && hechizos.length === 0)) && (
-          <View style={styles.emptyState}>
-            <FontAwesome name="inbox" size={48} color={colors.text + '40'} />
-            <Text style={[styles.emptyText, { color: colors.text + '99' }]}>
-              No hay elementos desbloqueados en este nivel
-            </Text>
-          </View>
-        )}
-      </View>
+      {currentItems.length > 0 ? (
+        <View style={styles.gridContainer}>
+          {currentItems.map((item) => (
+            <UnlockCard
+              key={item.id}
+              item={item}
+              color={currentColor}
+              colors={colors}
+            />
+          ))}
+        </View>
+      ) : (
+        <View style={[styles.emptyState, { backgroundColor: colors.card }]}>
+          <FontAwesome name="inbox" size={48} color={colors.text + '40'} />
+          <Text style={[styles.emptyText, { color: colors.text + '99' }]}>
+            No hay elementos desbloqueados en este nivel
+          </Text>
+        </View>
+      )}
     </>
   );
 };
@@ -111,52 +161,72 @@ const SubTabButton: React.FC<SubTabButtonProps> = ({ label, icon, count, isActiv
   </Pressable>
 );
 
-interface UnlockListProps {
-  items: DesbloqueoItem[];
-  icon: string;
+interface UnlockCardProps {
+  item: DesbloqueoItem;
   color: string;
   colors: any;
 }
 
-const UnlockList: React.FC<UnlockListProps> = ({ items, icon, color, colors }) => (
-  <>
-    {items.map((item, index) => (
-      <UnlockItem
-        key={item.id}
-        nombre={item.nombre}
-        nivel={item.nivel}
-        icon={icon}
-        color={color}
-        colors={colors}
-        isLast={index === items.length - 1}
-      />
-    ))}
-  </>
-);
+const UnlockCard: React.FC<UnlockCardProps> = ({ item, color, colors }) => {
+  const nivelMinimo = item.nivelMinimo ?? item.nivel ?? 1;
+  const nivelMaximo = item.nivelMaximo ?? item.nivel ?? 1;
+  const esNuevoDesbloqueo = item.esNuevoDesbloqueo ?? false;
+  const tieneRango = nivelMinimo !== nivelMaximo;
+  
+  // Texto para mostrar el rango de niveles
+  const textoNiveles = tieneRango 
+    ? `Niv. ${nivelMinimo}-${nivelMaximo}` 
+    : `Niv. ${nivelMinimo}`;
 
-interface UnlockItemProps {
-  nombre: string;
-  nivel: number;
-  icon: string;
-  color: string;
-  colors: any;
-  isLast?: boolean;
-}
+  // Preparar la imagen
+  const imageSource: ImageSourcePropType | null = item.imagenUrl 
+    ? { uri: item.imagenUrl }
+    : null;
 
-const UnlockItem: React.FC<UnlockItemProps> = ({ nombre, nivel, icon, color, colors, isLast }) => (
-  <View style={[styles.unlockItem, !isLast && { borderBottomColor: colors.cardBorder }]}>
-    <View style={[styles.unlockIconContainer, { backgroundColor: color + '20' }]}>
-      <FontAwesome name={icon as any} size={16} color={color} />
+  return (
+    <View style={[styles.card, { backgroundColor: colors.card }]}>
+      {/* Imagen de la entidad */}
+      <View style={[styles.imageContainer, { backgroundColor: color + '15' }]}>
+        {imageSource ? (
+          <Image
+            source={imageSource}
+            style={styles.entityImage}
+            resizeMode="contain"
+          />
+        ) : (
+          <View style={[styles.placeholderImage, { backgroundColor: color + '30' }]}>
+            <FontAwesome name="image" size={32} color={color + '80'} />
+          </View>
+        )}
+        {esNuevoDesbloqueo && (
+          <View style={[styles.newBadge, { backgroundColor: '#4CAF50' }]}>
+            <FontAwesome name="star" size={10} color="#FFFFFF" />
+          </View>
+        )}
+      </View>
+
+      {/* Información de la entidad */}
+      <View style={styles.cardInfo}>
+        <View style={styles.cardHeader}>
+          <Text style={[styles.cardNombre, { color: colors.text }]} numberOfLines={2}>
+            {item.nombre}
+          </Text>
+          {esNuevoDesbloqueo && (
+            <View style={[styles.newLabel, { backgroundColor: '#4CAF50' }]}>
+              <Text style={styles.newLabelText}>NUEVO</Text>
+            </View>
+          )}
+        </View>
+        
+        <View style={[styles.levelBadge, { backgroundColor: color + '20' }]}>
+          <Text style={[styles.levelBadgeText, { color: color }]}>
+            {textoNiveles}
+          </Text>
+        </View>
+      </View>
     </View>
-    <View style={styles.unlockInfo}>
-      <Text style={[styles.unlockNombre, { color: colors.text }]}>{nombre}</Text>
-      <Text style={[styles.unlockNivel, { color: colors.text + '99' }]}>Nivel {nivel}</Text>
-    </View>
-    <View style={[styles.unlockBadge, { backgroundColor: color + '20' }]}>
-      <Text style={[styles.unlockBadgeText, { color: color }]}>Nv. {nivel}</Text>
-    </View>
-  </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   subTabsContainer: {
@@ -179,7 +249,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'transparent',
   },
   subTabLabel: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '600',
   },
   subTabBadge: {
@@ -192,59 +262,107 @@ const styles = StyleSheet.create({
   },
   subTabBadgeText: {
     color: '#FFFFFF',
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '700',
   },
-  section: {
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     marginHorizontal: 20,
     marginTop: 16,
+    gap: 12,
+    paddingBottom: 20,
+  },
+  card: {
+    width: '47%', // 2 columnas con gap
     borderRadius: 16,
-    padding: 20,
+    padding: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
+    overflow: 'hidden',
   },
-  unlockItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    gap: 12,
-  },
-  unlockIconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+  imageContainer: {
+    width: '100%',
+    height: 120,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 10,
+    position: 'relative',
+    overflow: 'hidden',
   },
-  unlockInfo: {
-    flex: 1,
+  entityImage: {
+    width: '100%',
+    height: '100%',
   },
-  unlockNombre: {
-    fontSize: 15,
-    fontWeight: '600',
-    marginBottom: 2,
-  },
-  unlockNivel: {
-    fontSize: 13,
-    fontWeight: '400',
-  },
-  unlockBadge: {
+  placeholderImage: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 12,
-    paddingHorizontal: 10,
+  },
+  newBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 3,
+  },
+  cardInfo: {
+    gap: 8,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: 6,
+  },
+  cardNombre: {
+    fontSize: 14,
+    fontWeight: '600',
+    flex: 1,
+    lineHeight: 18,
+  },
+  newLabel: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  newLabelText: {
+    color: '#FFFFFF',
+    fontSize: 8,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+  levelBadge: {
+    alignSelf: 'flex-start',
+    borderRadius: 8,
+    paddingHorizontal: 8,
     paddingVertical: 4,
   },
-  unlockBadgeText: {
+  levelBadgeText: {
     fontSize: 12,
     fontWeight: '700',
   },
   emptyState: {
+    marginHorizontal: 20,
+    marginTop: 16,
+    borderRadius: 16,
+    padding: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 40,
   },
   emptyText: {
     marginTop: 16,
@@ -252,4 +370,3 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-

@@ -10,14 +10,14 @@ import { UpgradeInfo } from './components/UpgradeInfo';
 import { getLevelColor } from './utils/townHallUtils';
 import { styles } from './styles/styles';
 
-interface TownHallCardProps {
+export interface TownHallCardProps {
   nivel: number;
   capacidadOro?: number;
   capacidadElixir?: number;
   capacidadOscuro?: number;
   tiempoConstruccion?: number;
   costoMejora?: number;
-  tipoRecurso?: string;
+  tipoRecursoNombre?: string; // Nombre del recurso (ej: "Oro", "Elixir", etc.)
   imagenUrl?: string;
   onPress?: () => void;
   style?: ViewStyle;
@@ -30,7 +30,7 @@ export function TownHallCard({
   capacidadOscuro,
   tiempoConstruccion,
   costoMejora,
-  tipoRecurso,
+  tipoRecursoNombre,
   imagenUrl,
   onPress,
   style,
@@ -86,7 +86,7 @@ export function TownHallCard({
 
           <UpgradeInfo
             costoMejora={costoMejora}
-            tipoRecurso={tipoRecurso}
+            tipoRecurso={tipoRecursoNombre}
             tiempoConstruccion={tiempoConstruccion}
             tintColor={colors.tint}
             textColor={colors.text}
@@ -96,5 +96,3 @@ export function TownHallCard({
     </Pressable>
   );
 }
-
-

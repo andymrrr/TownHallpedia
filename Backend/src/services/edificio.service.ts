@@ -48,7 +48,8 @@ export class EdificioService extends BaseService<Edificio> {
       throw new Error(`Ya existe un edificio con el nombre ${createDto.nombre}`);
     }
 
-    return this.create(createDto);
+    // Mapear DTO a entidad (ya está correcto porque los tipos coinciden)
+    return this.create(createDto as Partial<Edificio>);
   }
 
   async updateEdificio(id: number, updateDto: UpdateEdificioDto): Promise<Edificio | null> {
@@ -60,6 +61,7 @@ export class EdificioService extends BaseService<Edificio> {
       }
     }
 
-    return this.update(id, updateDto);
+    // Mapear DTO a entidad (ya está correcto porque los tipos coinciden)
+    return this.update(id, updateDto as Partial<Edificio>);
   }
 }
