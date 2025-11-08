@@ -71,6 +71,26 @@ export class HechizoService implements IHechizoService {
     }
   }
 
+  async findWithDesbloqueos(id: number): Promise<Respuesta<Hechizo>> {
+    try {
+      const url = `${this.baseUrl}/${id}/desbloqueos`;
+      const response = await Api.get<Respuesta<Hechizo> | Hechizo>(url);
+      
+      // Si la respuesta ya tiene la estructura Respuesta, retornarla directamente
+      if (response.data && typeof response.data === 'object' && 'completado' in response.data) {
+        return response.data as Respuesta<Hechizo>;
+      }
+      
+      // Si solo viene el dato, envolverlo en Respuesta
+      return {
+        completado: true,
+        datos: response.data as Hechizo
+      };
+    } catch (error: any) {
+      return mapErrorARespuesta<Hechizo>(error, 'obtener hechizo con desbloqueos', 'HECHIZO');
+    }
+  }
+
   async create(createDto: CreateHechizo): Promise<Respuesta<Hechizo>> {
     try {
       const response = await Api.post<Hechizo>(this.baseUrl, createDto);

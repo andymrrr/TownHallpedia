@@ -1,9 +1,11 @@
 import React from 'react';
-import { Pressable, StyleSheet, View as RNView, Image, ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, View as RNView, ViewStyle } from 'react-native';
 import { Text } from '@/components/Themed';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
 import { FontAwesome } from '@expo/vector-icons';
+import { ImageWithFallback } from '@/components/common';
+import { EntityType } from '@/utils/images';
 
 export interface BuildingCardProps {
   id?: number;
@@ -98,17 +100,14 @@ export function BuildingCard({
         {/* Header con imagen grande */}
         <RNView style={[styles.buildingHeader, { backgroundColor: gradientColors[0] + '15' }]}>
           <RNView style={styles.imageContainer}>
-            {imagenUrl ? (
-              <Image 
-                source={{ uri: imagenUrl }} 
-                style={styles.buildingImage} 
-                resizeMode="contain" 
-              />
-            ) : (
-              <RNView style={[styles.placeholderImage, { backgroundColor: gradientColors[0] + '30' }]}>
-                <FontAwesome name="building" size={80} color={buildingColor} />
-              </RNView>
-            )}
+            <ImageWithFallback
+              imageUrl={imagenUrl}
+              entityType={EntityType.EDIFICIO}
+              style={styles.buildingImage}
+              placeholderIconColor={buildingColor}
+              placeholderBackgroundColor={gradientColors[0] + '30'}
+              placeholderIconSize={80}
+            />
           </RNView>
           
           {/* Badge de tipo */}

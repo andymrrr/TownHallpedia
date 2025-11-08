@@ -6,6 +6,7 @@ export interface IEdificioService {
   findOne(id: number): Promise<Respuesta<Edificio>>;
   findByTipo(tipo: string): Promise<Respuesta<Edificio[]>>;
   findWithTropas(id: number): Promise<Respuesta<Edificio>>;
+  findWithDesbloqueos(id: number): Promise<Respuesta<Edificio>>;
   create(createDto: CreateEdificio): Promise<Respuesta<Edificio>>;
   update(id: number, updateDto: UpdateEdificio): Promise<Respuesta<Edificio>>;
   delete(id: number): Promise<Respuesta<void>>;

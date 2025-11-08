@@ -1,13 +1,20 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Edificio } from '../entities/edificio.entity';
-import { EdificioService } from '../services/edificio.service';
-import { EdificioController } from '../controllers/edificio.controller';
+import { Edificio } from '../infrastructure/persistence/entities/edificio.entity';
+import { DesbloqueosAyuntamientoEdificio } from '../infrastructure/persistence/entities/desbloqueos-ayuntamiento-edificio.entity';
+import { EdificioService } from '../application/services/edificio.service';
+import { EdificioController } from '../presentation/controllers/edificio.controller';
+import { EdificioRepository } from '../infrastructure/persistence/repositories/edificio.repository';
+import { ObtenerEdificioConDesbloqueosUseCase } from '../application/use-cases/edificio/obtener-edificio-con-desbloqueos.use-case';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Edificio])],
+  imports: [TypeOrmModule.forFeature([Edificio, DesbloqueosAyuntamientoEdificio])],
   controllers: [EdificioController],
-  providers: [EdificioService],
+  providers: [
+    EdificioService,
+    EdificioRepository,
+    ObtenerEdificioConDesbloqueosUseCase,
+  ],
   exports: [EdificioService],
 })
 export class EdificioModule {}

@@ -1,9 +1,11 @@
 import React from 'react';
-import { View, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Text } from '@/components/Themed';
 import { FontAwesome } from '@expo/vector-icons';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
+import { ImageWithFallback } from '@/components/common';
+import { EntityType } from '@/utils/images';
 import { HeroeDetailData } from '../interfaces';
 import { formatNumber, getRoleColor, getHeroGradient } from '../../listar/components/HeroCard/utils';
 
@@ -23,17 +25,14 @@ export const HeroeDetailInfo: React.FC<HeroeDetailInfoProps> = ({ data }) => {
       {/* Hero Image Section */}
       <View style={[styles.heroSection, { backgroundColor: colors.card }]}>
         <View style={[styles.imageWrapper, { backgroundColor: gradientColors[0] + '15' }]}>
-          {data.imagenUrl ? (
-            <Image
-              source={{ uri: data.imagenUrl }}
-              style={styles.heroImage}
-              resizeMode="contain"
-            />
-          ) : (
-            <View style={[styles.placeholderImage, { backgroundColor: gradientColors[0] + '30' }]}>
-              <FontAwesome name="user-circle" size={120} color={roleColor} />
-            </View>
-          )}
+          <ImageWithFallback
+            imageUrl={data.imagenUrl}
+            entityType={EntityType.HEROE}
+            style={styles.heroImage}
+            placeholderIconColor={roleColor}
+            placeholderBackgroundColor={gradientColors[0] + '30'}
+            placeholderIconSize={120}
+          />
           <View style={[styles.roleBadge, { backgroundColor: roleColor }]}>
             <Text style={styles.roleText}>{defaultRol}</Text>
           </View>

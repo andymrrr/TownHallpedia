@@ -1,0 +1,2 @@
+export { mapToDetailData } from './HechizoDetailMapper';
+

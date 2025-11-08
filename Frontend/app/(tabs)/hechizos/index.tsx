@@ -3,6 +3,7 @@ import { Text } from '@/components/Themed';
 import { AppHeader } from '@/components/common';
 import { LoadingState, ErrorState } from '@/components/common/states';
 import { useColorScheme } from '@/components/useColorScheme';
+import { useRouter } from 'expo-router';
 import Colors from '@/constants/Colors';
 import { SpellCard } from '@/features/hechizos/listar/components';
 import { useHechizosListViewModel } from '@/features/hechizos/listar/viewModels';
@@ -16,7 +17,12 @@ export const options = {
 export default function HechizosScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  const router = useRouter();
   const vm = useHechizosListViewModel();
+
+  const handleHechizoPress = (id: number) => {
+    router.push(`/hechizos/${id}`);
+  };
 
   if (vm.isLoading) {
     return (
@@ -70,6 +76,7 @@ export default function HechizosScreen() {
                   tiempoMejoraHoras={hechizo.tiempoMejoraHoras}
                   descripcion={hechizo.descripcion}
                   imagenUrl={hechizo.imagenUrl}
+                  onPress={() => handleHechizoPress(hechizo.id)}
                 />
               </View>
             ))}

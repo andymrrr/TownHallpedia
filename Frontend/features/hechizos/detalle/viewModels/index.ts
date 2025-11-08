@@ -1,0 +1,2 @@
+export { useHechizoDetailViewModel } from './HechizoDetailViewModel';
+

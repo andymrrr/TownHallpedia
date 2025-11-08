@@ -62,7 +62,8 @@ export default function AyuntamientosScreen() {
               capacidadOscuro={ayuntamiento.capacidadOscuro}
               tiempoConstruccion={ayuntamiento.tiempoConstruccion}
               costoMejora={ayuntamiento.costoMejora}
-              tipoRecurso={ayuntamiento.tipoRecurso}
+              tipoRecursoNombre={ayuntamiento.tipoRecursoNombre}
+              imagenUrl={ayuntamiento.imagenUrl}
               onPress={() => vm.navigateToDetail(ayuntamiento.nivel)}
             />
           ))}

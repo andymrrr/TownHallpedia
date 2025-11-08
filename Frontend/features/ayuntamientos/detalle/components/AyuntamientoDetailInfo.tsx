@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, StyleSheet, Image, ImageSourcePropType } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Text } from '@/components/Themed';
 import { FontAwesome } from '@expo/vector-icons';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
-import { getTownHallImage, getPlaceholderImageUrl } from '../../listar/components/TownHallCard/utils/townHallImages';
+import { ImageWithFallback } from '@/components/common';
+import { EntityType } from '@/utils/images';
 import { formatNumber, formatTimeHours, getLevelColor } from '../../listar/components/TownHallCard/utils/townHallUtils';
 import { AyuntamientoDetailData } from '../interfaces';
 
@@ -17,19 +18,18 @@ export const AyuntamientoDetailInfo: React.FC<AyuntamientoDetailInfoProps> = ({ 
   const colors = Colors[colorScheme ?? 'light'];
   const levelColor = getLevelColor(data.nivel);
 
-  const imageSource: ImageSourcePropType = data.imagenUrl
-    ? { uri: data.imagenUrl }
-    : (getTownHallImage(data.nivel, data.imagenUrl) as ImageSourcePropType) || { uri: getPlaceholderImageUrl(data.nivel) };
-
   return (
     <>
       {/* Hero Image Section */}
       <View style={[styles.heroSection, { backgroundColor: colors.card }]}>
         <View style={[styles.imageWrapper, { backgroundColor: colors.background }]}>
-          <Image
-            source={imageSource}
+          <ImageWithFallback
+            imageUrl={data.imagenUrl}
+            entityType={EntityType.AYUNTAMIENTO}
             style={styles.heroImage}
-            resizeMode="contain"
+            placeholderIconColor={levelColor}
+            placeholderBackgroundColor={levelColor + '15'}
+            placeholderIconSize={120}
           />
           <View style={[styles.levelBadge, { backgroundColor: levelColor + '20' }]}>
             <View style={[styles.levelBadgeInner, { backgroundColor: levelColor }]}>

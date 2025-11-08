@@ -2,9 +2,13 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { setupSwagger } from './config/swagger.config';
+import { AllExceptionsFilter } from './common/filters';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Configurar filtro global de excepciones
+  app.useGlobalFilters(new AllExceptionsFilter());
 
   // Configurar validación global
   app.useGlobalPipes(

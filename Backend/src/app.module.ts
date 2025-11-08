@@ -13,7 +13,7 @@ import {
   HeroeModule,
   HechizoModule,
 } from './modules';
-import { SeedModule } from './seed/seed.module';
+import { SeedModule } from './infrastructure/persistence/seed/seed.module';
 
 @Module({
   imports: [

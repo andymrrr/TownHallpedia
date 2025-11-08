@@ -16,7 +16,7 @@ export const getDatabaseConfig = (configService: ConfigService): TypeOrmModuleOp
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
     
     // Configuración de migraciones
-    migrations: [__dirname + '/../migrations/*{.ts,.js}'],
+    migrations: [__dirname + '/../infrastructure/persistence/migrations/*{.ts,.js}'],
     migrationsRun: configService.get<boolean>('DB_MIGRATIONS_RUN', false),
     
     // Configuración de sincronización (NUNCA true en producción)

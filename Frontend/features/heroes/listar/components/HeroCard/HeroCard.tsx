@@ -1,9 +1,11 @@
 import React from 'react';
-import { Pressable, View as RNView, Image, ViewStyle } from 'react-native';
+import { Pressable, View as RNView, ViewStyle } from 'react-native';
 import { Text } from '@/components/Themed';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
-import { FontAwesome } from '@expo/vector-icons';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { ImageWithFallback } from '@/components/common';
+import { EntityType } from '@/utils/images';
 import { HeroCardProps } from './types';
 import { formatNumber, getRoleColor, getHeroGradient } from './utils';
 import { styles } from './styles/styles';
@@ -45,17 +47,14 @@ export function HeroCard({
         {/* Header con imagen grande */}
         <RNView style={[styles.heroHeader, { backgroundColor: gradientColors[0] + '15' }]}>
           <RNView style={styles.imageContainer}>
-            {iconoUrl ? (
-              <Image 
-                source={{ uri: iconoUrl }} 
-                style={styles.heroImage} 
-                resizeMode="contain" 
-              />
-            ) : (
-              <RNView style={[styles.placeholderImage, { backgroundColor: gradientColors[0] + '30' }]}>
-                <FontAwesome name="user-circle" size={80} color={roleColor} />
-              </RNView>
-            )}
+            <ImageWithFallback
+              imageUrl={iconoUrl}
+              entityType={EntityType.HEROE}
+              style={styles.heroImage}
+              placeholderIconColor={roleColor}
+              placeholderBackgroundColor={gradientColors[0] + '30'}
+              placeholderIconSize={80}
+            />
           </RNView>
           
           {/* Badge de rol */}

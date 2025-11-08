@@ -1,0 +1,2 @@
+export { useEdificioDetailViewModel } from './EdificioDetailViewModel';
+

@@ -58,6 +58,26 @@ export class EdificioService implements IEdificioService {
     }
   }
 
+  async findWithDesbloqueos(id: number): Promise<Respuesta<Edificio>> {
+    try {
+      const url = `${this.baseUrl}/${id}/desbloqueos`;
+      const response = await Api.get<Respuesta<Edificio> | Edificio>(url);
+      
+      // Si la respuesta ya tiene la estructura Respuesta, retornarla directamente
+      if (response.data && typeof response.data === 'object' && 'completado' in response.data) {
+        return response.data as Respuesta<Edificio>;
+      }
+      
+      // Si solo viene el dato, envolverlo en Respuesta
+      return {
+        completado: true,
+        datos: response.data as Edificio
+      };
+    } catch (error: any) {
+      return mapErrorARespuesta<Edificio>(error, 'obtener edificio con desbloqueos', 'EDIFICIO');
+    }
+  }
+
   async create(createDto: CreateEdificio): Promise<Respuesta<Edificio>> {
     try {
       const response = await Api.post<Edificio>(this.baseUrl, createDto);

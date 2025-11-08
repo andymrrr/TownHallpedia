@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Tropa } from '../entities/tropa.entity';
-import { TropaService } from '../services/tropa.service';
-import { TropaController } from '../controllers/tropa.controller';
+import { Tropa } from '../infrastructure/persistence/entities/tropa.entity';
+import { TropaService } from '../application/services/tropa.service';
+import { TropaController } from '../presentation/controllers/tropa.controller';
+import { TropaRepository } from '../infrastructure/persistence/repositories/tropa.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Tropa])],
   controllers: [TropaController],
-  providers: [TropaService],
+  providers: [TropaService, TropaRepository],
   exports: [TropaService],
 })
 export class TropaModule {}

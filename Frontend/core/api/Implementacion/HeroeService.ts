@@ -61,10 +61,17 @@ export class HeroeService implements IHeroeService {
   async findWithDesbloqueos(id: number): Promise<Respuesta<Heroe>> {
     try {
       const url = `${this.baseUrl}/${id}/desbloqueos`;
-      const response = await Api.get<Heroe>(url);
+      const response = await Api.get<Respuesta<Heroe> | Heroe>(url);
+      
+      // Si la respuesta ya tiene la estructura Respuesta, retornarla directamente
+      if (response.data && typeof response.data === 'object' && 'completado' in response.data) {
+        return response.data as Respuesta<Heroe>;
+      }
+      
+      // Si solo viene el dato, envolverlo en Respuesta
       return {
         completado: true,
-        datos: response.data
+        datos: response.data as Heroe
       };
     } catch (error: any) {
       return mapErrorARespuesta<Heroe>(error, 'obtener héroe con desbloqueos', 'HEROE');

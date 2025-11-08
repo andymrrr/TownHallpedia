@@ -7,6 +7,7 @@ export interface IHechizoService {
   findByTipo(tipo: string): Promise<Respuesta<Hechizo[]>>;
   findByEspacioHechizo(espacioHechizo: number): Promise<Respuesta<Hechizo[]>>;
   findWithRelations(id: number): Promise<Respuesta<Hechizo>>;
+  findWithDesbloqueos(id: number): Promise<Respuesta<Hechizo>>;
   create(createDto: CreateHechizo): Promise<Respuesta<Hechizo>>;
   update(id: number, updateDto: UpdateHechizo): Promise<Respuesta<Hechizo>>;
   delete(id: number): Promise<Respuesta<void>>;

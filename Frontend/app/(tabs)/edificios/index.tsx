@@ -3,6 +3,7 @@ import { Text } from '@/components/Themed';
 import { AppHeader } from '@/components/common';
 import { LoadingState, ErrorState } from '@/components/common/states';
 import { useColorScheme } from '@/components/useColorScheme';
+import { useRouter } from 'expo-router';
 import Colors from '@/constants/Colors';
 import { BuildingCard } from '@/features/edificios/listar/components';
 import { useEdificiosListViewModel } from '@/features/edificios/listar/viewModels';
@@ -16,7 +17,12 @@ export const options = {
 export default function EdificiosScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  const router = useRouter();
   const vm = useEdificiosListViewModel();
+
+  const handleEdificioPress = (id: number) => {
+    router.push(`/edificios/${id}`);
+  };
 
   if (vm.isLoading) {
     return (
@@ -72,6 +78,7 @@ export default function EdificiosScreen() {
                   tiempoMejoraHoras={edificio.tiempoMejoraHoras}
                   descripcion={edificio.descripcion}
                   imagenUrl={edificio.imagenUrl}
+                  onPress={() => handleEdificioPress(edificio.id)}
                 />
               </View>
             ))}

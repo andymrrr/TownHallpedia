@@ -1,9 +1,11 @@
 import React from 'react';
-import { Pressable, StyleSheet, View as RNView, Image, ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, View as RNView, ViewStyle } from 'react-native';
 import { Text } from '@/components/Themed';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
 import { FontAwesome } from '@expo/vector-icons';
+import { ImageWithFallback } from '@/components/common';
+import { EntityType } from '@/utils/images';
 
 export type SpellType = 'Elixir' | 'Oscuro' | 'Super';
 
@@ -97,17 +99,14 @@ export function SpellCard({
         {/* Header con imagen grande */}
         <RNView style={[styles.spellHeader, { backgroundColor: gradientColors[0] + '15' }]}>
           <RNView style={styles.imageContainer}>
-            {imagenUrl ? (
-              <Image 
-                source={{ uri: imagenUrl }} 
-                style={styles.spellImage} 
-                resizeMode="contain" 
-              />
-            ) : (
-              <RNView style={[styles.placeholderImage, { backgroundColor: gradientColors[0] + '30' }]}>
-                <FontAwesome name="magic" size={80} color={typeColor} />
-              </RNView>
-            )}
+            <ImageWithFallback
+              imageUrl={imagenUrl}
+              entityType={EntityType.HECHIZO}
+              style={styles.spellImage}
+              placeholderIconColor={typeColor}
+              placeholderBackgroundColor={gradientColors[0] + '30'}
+              placeholderIconSize={80}
+            />
           </RNView>
           
           {/* Badge de tipo */}

@@ -14,7 +14,7 @@ export default new DataSource({
   password: configService.get<string>('DB_PASSWORD', 'password'),
   database: configService.get<string>('DB_DATABASE', 'townhallpedia'),
   entities: [__dirname + '/src/**/*.entity{.ts,.js}'],
-  migrations: [__dirname + '/src/migrations/*{.ts,.js}'],
+  migrations: [__dirname + '/src/infrastructure/persistence/migrations/*{.ts,.js}'],
   synchronize: false,
   logging: configService.get<boolean>('DB_LOGGING', false),
 });

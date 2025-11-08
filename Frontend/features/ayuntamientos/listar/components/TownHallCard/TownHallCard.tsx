@@ -1,9 +1,10 @@
 import React from 'react';
-import { Pressable, ViewStyle, View as RNView, Image, ImageSourcePropType } from 'react-native';
+import { Pressable, ViewStyle, View as RNView } from 'react-native';
 import { Text } from '@/components/Themed';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
-import { getTownHallImage, getPlaceholderImageUrl } from './utils/townHallImages';
+import { ImageWithFallback } from '@/components/common';
+import { EntityType } from '@/utils/images';
 import { LevelBadge } from './components/LevelBadge';
 import { StorageStats } from './components/StorageStats';
 import { UpgradeInfo } from './components/UpgradeInfo';
@@ -39,9 +40,6 @@ export function TownHallCard({
   const colors = Colors[colorScheme ?? 'light'];
 
   const levelColor = getLevelColor(nivel);
-  const imageSource = imagenUrl 
-    ? { uri: imagenUrl }
-    : (getTownHallImage(nivel, imagenUrl) as ImageSourcePropType) || { uri: getPlaceholderImageUrl(nivel) };
 
   return (
     <Pressable
@@ -61,10 +59,13 @@ export function TownHallCard({
     >
       <RNView style={styles.contentContainer}>
         <RNView style={[styles.imageContainer, { backgroundColor: colors.background }]}>
-          <Image
-            source={imageSource}
+          <ImageWithFallback
+            imageUrl={imagenUrl}
+            entityType={EntityType.AYUNTAMIENTO}
             style={styles.townHallImage}
-            resizeMode="contain"
+            placeholderIconColor={levelColor}
+            placeholderBackgroundColor={levelColor + '15'}
+            placeholderIconSize={60}
           />
         </RNView>
         <RNView style={styles.infoContainer}>
