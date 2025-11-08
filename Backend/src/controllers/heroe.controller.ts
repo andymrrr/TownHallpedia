@@ -79,6 +79,17 @@ export class HeroeController {
     }
   }
 
+  @Get(':id/desbloqueos')
+  async findWithDesbloqueos(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<any>> {
+    try {
+      const heroe = await this.heroeService.findWithDesbloqueos(id);
+      if (!heroe) return fail<any>('Héroe no encontrado', { tipoError: 'HEROE' });
+      return ok<any>(heroe);
+    } catch (error: any) {
+      return fail<any>('Error al obtener héroe con desbloqueos', { errorTecnico: error?.message, tipoError: 'HEROE' });
+    }
+  }
+
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createDto: CreateHeroeDto): Promise<Respuesta<any>> {

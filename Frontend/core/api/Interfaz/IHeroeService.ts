@@ -6,6 +6,7 @@ export interface IHeroeService {
   findOne(id: number): Promise<Respuesta<Heroe>>;
   findByTipoRecurso(tipoRecurso: string): Promise<Respuesta<Heroe[]>>;
   findWithRelations(id: number): Promise<Respuesta<Heroe>>;
+  findWithDesbloqueos(id: number): Promise<Respuesta<Heroe>>;
   create(createDto: CreateHeroe): Promise<Respuesta<Heroe>>;
   update(id: number, updateDto: UpdateHeroe): Promise<Respuesta<Heroe>>;
   delete(id: number): Promise<Respuesta<void>>;

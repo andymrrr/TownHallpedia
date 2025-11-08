@@ -3,6 +3,7 @@ import { Text } from '@/components/Themed';
 import { AppHeader } from '@/components/common';
 import { LoadingState, ErrorState } from '@/components/common/states';
 import { useColorScheme } from '@/components/useColorScheme';
+import { useRouter } from 'expo-router';
 import Colors from '@/constants/Colors';
 import { HeroCard } from '@/features/heroes/listar/components';
 import { useHeroesListViewModel } from '@/features/heroes/listar/viewModels';
@@ -16,7 +17,12 @@ export const options = {
 export default function HeroesScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  const router = useRouter();
   const vm = useHeroesListViewModel();
+
+  const handleHeroPress = (id: number) => {
+    router.push(`/heroes/${id}`);
+  };
 
   if (vm.isLoading) {
     return (
@@ -73,6 +79,7 @@ export default function HeroesScreen() {
                 vida={heroe.vida}
                 habilidad={heroe.habilidad}
                 rol={heroe.rol}
+                onPress={() => handleHeroPress(heroe.id)}
               />
             ))}
           </View>

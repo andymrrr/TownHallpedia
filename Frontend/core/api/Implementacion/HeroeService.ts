@@ -58,6 +58,19 @@ export class HeroeService implements IHeroeService {
     }
   }
 
+  async findWithDesbloqueos(id: number): Promise<Respuesta<Heroe>> {
+    try {
+      const url = `${this.baseUrl}/${id}/desbloqueos`;
+      const response = await Api.get<Heroe>(url);
+      return {
+        completado: true,
+        datos: response.data
+      };
+    } catch (error: any) {
+      return mapErrorARespuesta<Heroe>(error, 'obtener héroe con desbloqueos', 'HEROE');
+    }
+  }
+
   async create(createDto: CreateHeroe): Promise<Respuesta<Heroe>> {
     try {
       const response = await Api.post<Heroe>(this.baseUrl, createDto);

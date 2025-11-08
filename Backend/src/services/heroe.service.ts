@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { PaginationQueryDto, PageDto } from '../common/pagination/pagination.dto';
 import { paginateQueryBuilder } from '../common/pagination/paginate-typeorm';
 import { Heroe } from '../entities/heroe.entity';
+import { DesbloqueosAyuntamientoHeroe } from '../entities/desbloqueos-ayuntamiento-heroe.entity';
 import { BaseService } from './base.service';
 import { CreateHeroeDto, UpdateHeroeDto } from '../dto/heroe.dto';
 
@@ -12,6 +13,8 @@ export class HeroeService extends BaseService<Heroe> {
   constructor(
     @InjectRepository(Heroe)
     private readonly heroeRepository: Repository<Heroe>,
+    @InjectRepository(DesbloqueosAyuntamientoHeroe)
+    private readonly desbloqueosRepository: Repository<DesbloqueosAyuntamientoHeroe>,
   ) {
     super(heroeRepository);
   }
@@ -44,6 +47,35 @@ export class HeroeService extends BaseService<Heroe> {
       where: { id } as any,
       relations: ['tipoRecurso', 'habilidades', 'nivelesDetalle', 'desbloqueos'],
     });
+  }
+
+  async findWithDesbloqueos(id: number): Promise<Heroe | null> {
+    const heroe = await this.heroeRepository.findOne({
+      where: { id } as any,
+      relations: ['tipoRecurso', 'habilidades'],
+    });
+
+    if (!heroe) {
+      return null;
+    }
+
+    // Obtener todos los desbloqueos de este héroe en diferentes ayuntamientos
+    const desbloqueos = await this.desbloqueosRepository.find({
+      where: { heroeId: id },
+      relations: ['ayuntamiento'],
+      order: { ayuntamiento: { nivel: 'ASC' } } as any,
+    });
+
+    return {
+      ...heroe,
+      desbloqueos: desbloqueos.map(desbloqueo => ({
+        ayuntamientoId: desbloqueo.ayuntamientoId,
+        ayuntamiento: desbloqueo.ayuntamiento,
+        esNuevo: desbloqueo.esNuevo,
+        nivelMinimoDisponible: desbloqueo.nivelMinimoDisponible,
+        nivelMaximoDisponible: desbloqueo.nivelMaximoDisponible,
+      })),
+    } as any;
   }
 
   async paginate(query: PaginationQueryDto): Promise<PageDto<Heroe>> {

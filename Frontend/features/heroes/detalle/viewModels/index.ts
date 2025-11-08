@@ -1,0 +1,2 @@
+export { useHeroeDetailViewModel } from './HeroeDetailViewModel';
+
