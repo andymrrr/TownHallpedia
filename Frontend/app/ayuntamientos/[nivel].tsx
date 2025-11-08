@@ -116,7 +116,7 @@ export default function AyuntamientoDetailScreen() {
     return null;
   }
 
-  const desbloqueosCount = vm.data.heroes.length + vm.data.tropas.length + vm.data.hechizos.length + vm.data.animales.length;
+  const desbloqueosCount = vm.data.heroes.length + vm.data.tropas.length + vm.data.hechizos.length + vm.data.edificios.length + vm.data.animales.length;
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -152,6 +152,7 @@ export default function AyuntamientoDetailScreen() {
             heroes={vm.data.heroes}
             tropas={vm.data.tropas}
             hechizos={vm.data.hechizos}
+            edificios={vm.data.edificios}
             animales={vm.data.animales}
             activeSubTab={vm.activeSubTab}
             onSubTabChange={vm.setActiveSubTab}
@@ -170,7 +171,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 40,
+    paddingBottom: 20,
   },
   refreshButton: {
     width: 40,

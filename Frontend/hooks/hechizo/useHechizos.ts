@@ -1,30 +1,19 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import { HechizoService } from '@/core/api/Implementacion/HechizoService';
 import { ObtenerHechizosCasoUso } from '@/core/Domain/CasoUso/Hechizo';
 import { Hechizo } from '@/core/Domain/Model/Hechizo/Hechizo';
-import { IHechizoService } from '@/core/api/Interfaz/IHechizoService';
+import { Respuesta } from '@/core/Domain/Model/Comun/Respuesta';
+
+const servicio = new HechizoService();
+const casoUso = new ObtenerHechizosCasoUso(servicio);
 
 /**
  * Hook para obtener todos los hechizos
- * Nota: Requiere que HechizoService esté implementado
  */
-export function useHechizos(hechizoService?: IHechizoService) {
-  return useQuery<Hechizo[], Error>({
+export const useHechizos = (): UseQueryResult<Respuesta<Hechizo[]>, Error> => {
+  return useQuery({
     queryKey: ['hechizos'],
-    queryFn: async () => {
-      if (!hechizoService) {
-        throw new Error('HechizoService no está disponible aún');
-      }
-
-      const casoUso = new ObtenerHechizosCasoUso(hechizoService);
-      const resultado = await casoUso.ejecutar();
-      
-      if (!resultado.completado || !resultado.datos) {
-        throw new Error(resultado.mensaje || 'Error al obtener hechizos');
-      }
-      
-      return resultado.datos;
-    },
-    enabled: hechizoService !== undefined,
+    queryFn: () => casoUso.ejecutar(),
   });
-}
+};
 

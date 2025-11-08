@@ -1,0 +1,2 @@
+export { useEdificiosListViewModel } from './EdificiosListViewModel';
+

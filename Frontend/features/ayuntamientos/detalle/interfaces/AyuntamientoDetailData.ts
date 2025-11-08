@@ -13,5 +13,6 @@ export interface AyuntamientoDetailData {
   heroes: DesbloqueoItem[];
   tropas: DesbloqueoItem[];
   hechizos: DesbloqueoItem[];
+  edificios: DesbloqueoItem[];
   animales: DesbloqueoItem[];
 }

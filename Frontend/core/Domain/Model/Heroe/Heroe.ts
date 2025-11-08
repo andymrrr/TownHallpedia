@@ -23,5 +23,11 @@ export interface Heroe {
   nivelAyuntamientoDesbloqueo?: number;
   vida?: number;
   habilidades?: Habilidad[];
+  // Campos adicionales que pueden venir del backend
+  danoPorSegundo?: number;
+  dano?: number;
+  damage?: number;
+  rol?: 'Tanque' | 'Ofensivo' | 'Soporte';
+  role?: 'Tanque' | 'Ofensivo' | 'Soporte';
 }
 

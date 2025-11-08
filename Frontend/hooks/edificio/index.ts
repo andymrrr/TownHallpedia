@@ -1,0 +1,2 @@
+export { useEdificios } from './useEdificios';
+

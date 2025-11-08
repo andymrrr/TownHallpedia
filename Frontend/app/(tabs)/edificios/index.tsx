@@ -4,24 +4,24 @@ import { AppHeader } from '@/components/common';
 import { LoadingState, ErrorState } from '@/components/common/states';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
-import { SpellCard } from '@/features/hechizos/listar/components';
-import { useHechizosListViewModel } from '@/features/hechizos/listar/viewModels';
+import { BuildingCard } from '@/features/edificios/listar/components';
+import { useEdificiosListViewModel } from '@/features/edificios/listar/viewModels';
 
 export const options = {
-  title: 'Hechizos',
-  tabBarLabel: 'Hechizos',
+  title: 'Edificios',
+  tabBarLabel: 'Edificios',
   headerShown: false,
 };
 
-export default function HechizosScreen() {
+export default function EdificiosScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
-  const vm = useHechizosListViewModel();
+  const vm = useEdificiosListViewModel();
 
   if (vm.isLoading) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <AppHeader title="Hechizos" variant="compact" />
+        <AppHeader title="Edificios" variant="compact" />
         <LoadingState />
       </View>
     );
@@ -30,9 +30,9 @@ export default function HechizosScreen() {
   if (vm.errorMessage) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <AppHeader title="Hechizos" variant="compact" />
+        <AppHeader title="Edificios" variant="compact" />
         <ErrorState
-          title="Error al cargar hechizos"
+          title="Error al cargar edificios"
           message={vm.errorMessage}
           onRetry={vm.refetch}
           retryLabel="Reintentar"
@@ -44,7 +44,7 @@ export default function HechizosScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <AppHeader
-        title="Hechizos"
+        title="Edificios"
         variant="compact"
       />
       <ScrollView
@@ -55,21 +55,23 @@ export default function HechizosScreen() {
         {vm.items.length === 0 ? (
           <View style={styles.emptyContainer}>
             <Text style={[styles.emptyText, { color: colors.text + '99' }]}>
-              No hay hechizos disponibles
+              No hay edificios disponibles
             </Text>
           </View>
         ) : (
-          <View style={styles.hechizosGrid}>
-            {vm.items.map((hechizo) => (
-              <View key={hechizo.id} style={styles.cardWrapper}>
-                <SpellCard
-                  nombre={hechizo.nombre}
-                  tipo={hechizo.tipo || 'Elixir'}
-                  nivelRequerido={hechizo.nivelRequeridoTH}
-                  costoMejora={hechizo.costoMejora}
-                  tiempoMejoraHoras={hechizo.tiempoMejoraHoras}
-                  descripcion={hechizo.descripcion}
-                  imagenUrl={hechizo.imagenUrl}
+          <View style={styles.edificiosGrid}>
+            {vm.items.map((edificio) => (
+              <View key={edificio.id} style={styles.cardWrapper}>
+                <BuildingCard
+                  id={edificio.id}
+                  nombre={edificio.nombre}
+                  tipo={edificio.tipo}
+                  nivelRequeridoTH={edificio.nivelRequeridoTH}
+                  nivelMaximo={edificio.nivelMaximo}
+                  costoMejora={edificio.costoMejora}
+                  tiempoMejoraHoras={edificio.tiempoMejoraHoras}
+                  descripcion={edificio.descripcion}
+                  imagenUrl={edificio.imagenUrl}
                 />
               </View>
             ))}
@@ -92,7 +94,7 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 40,
   },
-  hechizosGrid: {
+  edificiosGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 16,

@@ -10,15 +10,17 @@ interface AyuntamientoDetailDesbloqueosProps {
   heroes: DesbloqueoItem[];
   tropas: DesbloqueoItem[];
   hechizos: DesbloqueoItem[];
+  edificios: DesbloqueoItem[];
   animales: DesbloqueoItem[];
-  activeSubTab: 'heroes' | 'tropas' | 'hechizos' | 'animales';
-  onSubTabChange: (tab: 'heroes' | 'tropas' | 'hechizos' | 'animales') => void;
+  activeSubTab: 'heroes' | 'tropas' | 'hechizos' | 'edificios' | 'animales';
+  onSubTabChange: (tab: 'heroes' | 'tropas' | 'hechizos' | 'edificios' | 'animales') => void;
 }
 
 export const AyuntamientoDetailDesbloqueos: React.FC<AyuntamientoDetailDesbloqueosProps> = ({
   heroes,
   tropas,
   hechizos,
+  edificios,
   animales,
   activeSubTab,
   onSubTabChange,
@@ -28,9 +30,10 @@ export const AyuntamientoDetailDesbloqueos: React.FC<AyuntamientoDetailDesbloque
 
   // Colores mejorados para cada categoría
   const categoryColors = {
-    heroes: '#FF6B35', // Naranja (sin cambios)
-    tropas: '#4A90E2', // Azul (sin cambios)
-    hechizos: '#00B4D8', // Azul claro/ciano (cambió del morado)
+    heroes: '#FF6B35', // Naranja
+    tropas: '#4A90E2', // Azul
+    hechizos: '#00B4D8', // Azul claro/ciano
+    edificios: '#8B4513', // Marrón (color para edificios)
     animales: '#10B981', // Verde esmeralda
   };
 
@@ -42,6 +45,8 @@ export const AyuntamientoDetailDesbloqueos: React.FC<AyuntamientoDetailDesbloque
         return tropas;
       case 'hechizos':
         return hechizos;
+      case 'edificios':
+        return edificios;
       case 'animales':
         return animales;
       default:
@@ -57,6 +62,8 @@ export const AyuntamientoDetailDesbloqueos: React.FC<AyuntamientoDetailDesbloque
         return tropas.length;
       case 'hechizos':
         return hechizos.length;
+      case 'edificios':
+        return edificios.length;
       case 'animales':
         return animales.length;
       default:
@@ -96,6 +103,15 @@ export const AyuntamientoDetailDesbloqueos: React.FC<AyuntamientoDetailDesbloque
           isActive={activeSubTab === 'hechizos'}
           onPress={() => onSubTabChange('hechizos')}
           color={categoryColors.hechizos}
+          colors={colors}
+        />
+        <SubTabButton
+          label="Edificios"
+          icon="building"
+          count={edificios.length}
+          isActive={activeSubTab === 'edificios'}
+          onPress={() => onSubTabChange('edificios')}
+          color={categoryColors.edificios}
           colors={colors}
         />
         <SubTabButton
@@ -148,11 +164,11 @@ const SubTabButton: React.FC<SubTabButtonProps> = ({ label, icon, count, isActiv
     onPress={onPress}
     style={[
       styles.subTabButton,
-      isActive && { backgroundColor: color + '20', borderBottomColor: color },
+      isActive && { backgroundColor: color + '20', borderTopColor: color },
     ]}
   >
-    <FontAwesome name={icon as any} size={16} color={isActive ? color : colors.text + '99'} />
-    <Text style={[styles.subTabLabel, { color: isActive ? color : colors.text + '99' }]}>
+    <FontAwesome name={icon as any} size={14} color={isActive ? color : colors.text + '99'} />
+    <Text style={[styles.subTabLabel, { color: isActive ? color : colors.text + '99' }]} numberOfLines={1}>
       {label}
     </Text>
     <View style={[styles.subTabBadge, { backgroundColor: isActive ? color : colors.text + '40' }]}>
@@ -231,66 +247,66 @@ const UnlockCard: React.FC<UnlockCardProps> = ({ item, color, colors }) => {
 const styles = StyleSheet.create({
   subTabsContainer: {
     flexDirection: 'row',
-    marginHorizontal: 20,
-    marginTop: 16,
+    marginHorizontal: 16,
+    marginTop: 12,
     borderRadius: 12,
-    padding: 4,
-    gap: 4,
+    padding: 3,
+    gap: 3,
   },
   subTabButton: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
+    paddingVertical: 6,
     borderRadius: 8,
-    gap: 6,
-    borderBottomWidth: 2,
-    borderBottomColor: 'transparent',
+    gap: 3,
+    borderTopWidth: 2,
+    borderTopColor: 'transparent',
   },
   subTabLabel: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: '600',
   },
   subTabBadge: {
-    borderRadius: 10,
-    minWidth: 20,
-    height: 20,
-    paddingHorizontal: 6,
+    borderRadius: 8,
+    minWidth: 18,
+    height: 18,
+    paddingHorizontal: 4,
     justifyContent: 'center',
     alignItems: 'center',
   },
   subTabBadgeText: {
     color: '#FFFFFF',
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: '700',
   },
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginHorizontal: 20,
-    marginTop: 16,
-    gap: 12,
-    paddingBottom: 20,
+    marginHorizontal: 16,
+    marginTop: 12,
+    gap: 10,
+    paddingBottom: 16,
   },
   card: {
     width: '47%', // 2 columnas con gap
-    borderRadius: 16,
-    padding: 12,
+    borderRadius: 12,
+    padding: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+    shadowRadius: 6,
+    elevation: 2,
     overflow: 'hidden',
   },
   imageContainer: {
     width: '100%',
-    height: 120,
-    borderRadius: 12,
+    height: 100,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 8,
     position: 'relative',
     overflow: 'hidden',
   },
@@ -330,10 +346,10 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   cardNombre: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
     flex: 1,
-    lineHeight: 18,
+    lineHeight: 16,
   },
   newLabel: {
     paddingHorizontal: 6,
@@ -357,16 +373,16 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   emptyState: {
-    marginHorizontal: 20,
-    marginTop: 16,
-    borderRadius: 16,
-    padding: 40,
+    marginHorizontal: 16,
+    marginTop: 12,
+    borderRadius: 12,
+    padding: 32,
     alignItems: 'center',
     justifyContent: 'center',
   },
   emptyText: {
-    marginTop: 16,
-    fontSize: 15,
+    marginTop: 12,
+    fontSize: 14,
     textAlign: 'center',
   },
 });

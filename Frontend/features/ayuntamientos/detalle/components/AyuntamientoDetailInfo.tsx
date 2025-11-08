@@ -42,7 +42,7 @@ export const AyuntamientoDetailInfo: React.FC<AyuntamientoDetailInfoProps> = ({ 
       {/* Capacidades Section */}
       <View style={[styles.section, { backgroundColor: colors.card }]}>
         <View style={styles.sectionHeader}>
-          <FontAwesome name="database" size={20} color={colors.tint} />
+          <FontAwesome name="database" size={18} color={colors.tint} />
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Capacidades de Almacenamiento</Text>
         </View>
         
@@ -74,7 +74,7 @@ export const AyuntamientoDetailInfo: React.FC<AyuntamientoDetailInfoProps> = ({ 
       {/* Información de Mejora */}
       <View style={[styles.section, { backgroundColor: colors.card }]}>
         <View style={styles.sectionHeader}>
-          <FontAwesome name="arrow-up" size={20} color={colors.tint} />
+          <FontAwesome name="arrow-up" size={18} color={colors.tint} />
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Información de Mejora</Text>
         </View>
 
@@ -101,7 +101,7 @@ export const AyuntamientoDetailInfo: React.FC<AyuntamientoDetailInfoProps> = ({ 
       {/* Características */}
       <View style={[styles.section, { backgroundColor: colors.card }]}>
         <View style={styles.sectionHeader}>
-          <FontAwesome name="star" size={20} color={colors.tint} />
+          <FontAwesome name="star" size={18} color={colors.tint} />
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Características</Text>
         </View>
         
@@ -136,7 +136,7 @@ interface StatCardProps {
 const StatCard: React.FC<StatCardProps> = ({ icon, label, value, color, colors }) => (
   <View style={[styles.statCard, { backgroundColor: colors.background, borderColor: colors.cardBorder }]}>
     <View style={[styles.statIconContainer, { backgroundColor: color + '20' }]}>
-      <FontAwesome name={icon as any} size={24} color={color} />
+      <FontAwesome name={icon as any} size={20} color={color} />
     </View>
     <Text style={[styles.statValue, { color: colors.text }]}>{value}</Text>
     <Text style={[styles.statLabel, { color: colors.text + '99' }]}>{label}</Text>
@@ -153,7 +153,7 @@ interface InfoRowProps {
 const InfoRow: React.FC<InfoRowProps> = ({ icon, label, value, colors }) => (
   <View style={[styles.infoRow, { borderBottomColor: colors.cardBorder }]}>
     <View style={styles.infoRowLeft}>
-      <FontAwesome name={icon as any} size={16} color={colors.tint} />
+      <FontAwesome name={icon as any} size={14} color={colors.tint} />
       <Text style={[styles.infoLabel, { color: colors.text + 'CC' }]}>{label}</Text>
     </View>
     <Text style={[styles.infoValue, { color: colors.text }]}>{value}</Text>
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginTop: 16,
     borderRadius: 16,
-    padding: 20,
+    padding: 16,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
   },
   imageWrapper: {
     width: '100%',
-    height: 180,
+    height: 120,
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
@@ -200,26 +200,26 @@ const styles = StyleSheet.create({
   },
   levelBadge: {
     position: 'absolute',
-    top: 12,
-    right: 12,
-    borderRadius: 20,
-    padding: 4,
+    top: 8,
+    right: 8,
+    borderRadius: 16,
+    padding: 3,
   },
   levelBadgeInner: {
-    borderRadius: 16,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
   },
   levelBadgeText: {
     color: '#FFFFFF',
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '700',
   },
   section: {
     marginHorizontal: 20,
-    marginTop: 16,
+    marginTop: 12,
     borderRadius: 16,
-    padding: 20,
+    padding: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -229,47 +229,47 @@ const styles = StyleSheet.create({
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 12,
     gap: 10,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '700',
   },
   statsGrid: {
     flexDirection: 'row',
-    gap: 12,
+    gap: 8,
     justifyContent: 'space-between',
   },
   statCard: {
     flex: 1,
     borderRadius: 12,
-    padding: 16,
+    padding: 12,
     alignItems: 'center',
     borderWidth: 1,
   },
   statIconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   statValue: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '700',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   statLabel: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '500',
   },
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 10,
     borderBottomWidth: 1,
   },
   infoRowLeft: {
@@ -279,21 +279,21 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   infoLabel: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '500',
   },
   infoValue: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '700',
   },
   featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    paddingVertical: 10,
+    paddingVertical: 8,
   },
   featureText: {
-    fontSize: 15,
+    fontSize: 14,
     flex: 1,
   },
 });

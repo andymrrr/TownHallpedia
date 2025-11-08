@@ -1,0 +1,2 @@
+export { useHechizosListViewModel } from './HechizosListViewModel';
+

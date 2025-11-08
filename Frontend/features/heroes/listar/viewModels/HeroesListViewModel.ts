@@ -5,13 +5,13 @@ import { HeroListItem, UseHeroesListVMResult } from '../interfaces';
 
 /**
  * Obtiene características adicionales del héroe basadas en su nombre
- * (Estas características no están en la entidad, se mantienen hardcodeadas por ahora)
+ * (Solo se usan como fallback si no vienen del backend)
  */
-function getHeroCharacteristics(nombre: string): {
-  danoPorSegundo: number;
-  vida: number;
-  habilidad: string;
-  rol: 'Tanque' | 'Ofensivo' | 'Soporte';
+function getHeroFallbackCharacteristics(nombre: string): {
+  danoPorSegundo?: number;
+  vida?: number;
+  habilidad?: string;
+  rol?: 'Tanque' | 'Ofensivo' | 'Soporte';
 } {
   const nombreLower = nombre.toLowerCase();
   
@@ -55,11 +55,8 @@ function getHeroCharacteristics(nombre: string): {
     };
   }
   
-  // Valores por defecto
+  // Valores por defecto (solo si es necesario)
   return {
-    danoPorSegundo: 250,
-    vida: 4000,
-    habilidad: 'Habilidad Especial',
     rol: 'Soporte',
   };
 }
@@ -82,13 +79,19 @@ function mapToListItem(heroe: Heroe): HeroListItem | null {
     }
   }
 
-  // Obtener características del héroe
-  const characteristics = getHeroCharacteristics(heroe.nombre);
+  // Obtener características de fallback solo si no vienen del backend
+  const fallbackCharacteristics = getHeroFallbackCharacteristics(heroe.nombre);
 
-  // Obtener la primera habilidad si existe
+  // Obtener la primera habilidad del backend si existe, sino usar fallback
   const primeraHabilidad = heroe.habilidades && heroe.habilidades.length > 0 
     ? heroe.habilidades[0].nombre 
-    : characteristics.habilidad;
+    : fallbackCharacteristics.habilidad;
+
+  // Intentar obtener datos adicionales del backend si están disponibles
+  // (pueden venir como propiedades adicionales en el objeto heroe)
+  const heroeAny = heroe as any;
+  const danoPorSegundo = heroeAny.danoPorSegundo ?? heroeAny.dano ?? heroeAny.damage ?? fallbackCharacteristics.danoPorSegundo;
+  const rol = heroeAny.rol ?? heroeAny.role ?? fallbackCharacteristics.rol;
 
   return {
     id: heroe.id,
@@ -98,11 +101,11 @@ function mapToListItem(heroe: Heroe): HeroListItem | null {
     imagenUrl: heroe.portada,
     nivelMaximo: heroe.nivelMaximo,
     nivelAyuntamientoDesbloqueo: heroe.nivelAyuntamientoDesbloqueo,
-    vida: heroe.vida ?? characteristics.vida, // Usar vida de la entidad o fallback
-    // Características adicionales (mantenemos las hardcodeadas por ahora)
-    danoPorSegundo: characteristics.danoPorSegundo,
+    // Usar datos del backend cuando estén disponibles, sino usar fallback
+    vida: heroe.vida ?? fallbackCharacteristics.vida,
+    danoPorSegundo,
     habilidad: primeraHabilidad,
-    rol: characteristics.rol,
+    rol,
   };
 }
 

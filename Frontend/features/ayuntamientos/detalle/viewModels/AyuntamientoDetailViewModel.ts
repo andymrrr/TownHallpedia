@@ -58,6 +58,7 @@ function mapToDetailData(ayuntamiento: Ayuntamiento): AyuntamientoDetailData {
   const heroes: DesbloqueoItem[] = [];
   const tropas: DesbloqueoItem[] = [];
   const hechizos: DesbloqueoItem[] = [];
+  const edificios: DesbloqueoItem[] = [];
   const animales: DesbloqueoItem[] = [];
 
   // Mapear desbloqueos si existen (nueva estructura)
@@ -92,6 +93,16 @@ function mapToDetailData(ayuntamiento: Ayuntamiento): AyuntamientoDetailData {
       });
     }
 
+    // Mapear edificios
+    if (ayuntamiento.desbloqueos.edificios && Array.isArray(ayuntamiento.desbloqueos.edificios)) {
+      ayuntamiento.desbloqueos.edificios.forEach((desbloqueo: Desbloqueo) => {
+        const item = mapDesbloqueoToItem(desbloqueo);
+        if (item) {
+          edificios.push(item);
+        }
+      });
+    }
+
     // Mapear animales
     if (ayuntamiento.desbloqueos.animales && Array.isArray(ayuntamiento.desbloqueos.animales)) {
       ayuntamiento.desbloqueos.animales.forEach((desbloqueo: Desbloqueo) => {
@@ -116,13 +127,14 @@ function mapToDetailData(ayuntamiento: Ayuntamiento): AyuntamientoDetailData {
     heroes,
     tropas,
     hechizos,
+    edificios,
     animales,
   };
 }
 
 export function useAyuntamientoDetailViewModel(nivel: number): UseAyuntamientoDetailVMResult {
   const [activeTab, setActiveTab] = useState<'info' | 'desbloqueos'>('info');
-  const [activeSubTab, setActiveSubTab] = useState<'heroes' | 'tropas' | 'hechizos' | 'animales'>('heroes');
+  const [activeSubTab, setActiveSubTab] = useState<'heroes' | 'tropas' | 'hechizos' | 'edificios' | 'animales'>('heroes');
 
   const query = useAyuntamientoPorNivelConDesbloqueos(nivel);
 
