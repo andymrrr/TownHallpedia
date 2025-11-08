@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { HechizoRepository } from '../../../infrastructure/persistence/repositories/hechizo.repository';
-import { Hechizo } from '../../../infrastructure/persistence/entities/hechizo.entity';
+import { HechizoConDesbloqueos } from '../../../domain/types/desbloqueos.types';
 
 /**
  * Caso de uso: Obtener un hechizo con sus desbloqueos
@@ -11,7 +11,7 @@ export class ObtenerHechizoConDesbloqueosUseCase {
     private readonly hechizoRepository: HechizoRepository,
   ) {}
 
-  async execute(id: number): Promise<(Hechizo & { desbloqueos: any }) | null> {
+  async execute(id: number): Promise<HechizoConDesbloqueos | null> {
     const hechizoEntity = await this.hechizoRepository.findOne(id);
 
     if (!hechizoEntity) {
@@ -22,14 +22,8 @@ export class ObtenerHechizoConDesbloqueosUseCase {
 
     return {
       ...hechizoEntity,
-      desbloqueos: desbloqueos.map(desbloqueo => ({
-        ayuntamientoId: desbloqueo.ayuntamientoId,
-        ayuntamiento: desbloqueo.ayuntamiento,
-        esNuevo: desbloqueo.esNuevo,
-        nivelMinimoDisponible: desbloqueo.nivelMinimoDisponible,
-        nivelMaximoDisponible: desbloqueo.nivelMaximoDisponible,
-      })),
-    } as any;
+      desbloqueos,
+    };
   }
 }
 

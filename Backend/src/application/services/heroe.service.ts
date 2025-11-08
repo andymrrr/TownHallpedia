@@ -6,6 +6,7 @@ import { CreateHeroeDto, UpdateHeroeDto } from '../../presentation/dto/heroe.dto
 import { IHeroeService } from '../../domain/interfaces/heroe.service.interface';
 import { HeroeRepository } from '../../infrastructure/persistence/repositories/heroe.repository';
 import { ObtenerHeroeConDesbloqueosUseCase } from '../use-cases/heroe/obtener-heroe-con-desbloqueos.use-case';
+import { HeroeConDesbloqueos } from '../../domain/types/desbloqueos.types';
 
 @Injectable()
 export class HeroeService implements IHeroeService {
@@ -34,7 +35,7 @@ export class HeroeService implements IHeroeService {
     return this.heroeRepository.findWithRelations(id);
   }
 
-  async findWithDesbloqueos(id: number): Promise<Heroe | null> {
+  async findWithDesbloqueos(id: number): Promise<HeroeConDesbloqueos | null> {
     return this.obtenerHeroeConDesbloqueosUseCase.execute(id);
   }
 

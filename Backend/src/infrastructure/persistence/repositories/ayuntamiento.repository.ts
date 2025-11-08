@@ -7,14 +7,7 @@ import { DesbloqueosAyuntamientoTropa } from '../entities/desbloqueos-ayuntamien
 import { DesbloqueosAyuntamientoHechizo } from '../entities/desbloqueos-ayuntamiento-hechizo.entity';
 import { DesbloqueosAyuntamientoEdificio } from '../entities/desbloqueos-ayuntamiento-edificio.entity';
 import { DesbloqueosAyuntamientoAnimal } from '../entities/desbloqueos-ayuntamiento-animal.entity';
-
-export interface DesbloqueosResult {
-  heroes: DesbloqueosAyuntamientoHeroe[];
-  tropas: DesbloqueosAyuntamientoTropa[];
-  hechizos: DesbloqueosAyuntamientoHechizo[];
-  edificios: DesbloqueosAyuntamientoEdificio[];
-  animales: DesbloqueosAyuntamientoAnimal[];
-}
+import { DesbloqueosResult } from '../../../domain/types/desbloqueos.types';
 
 @Injectable()
 export class AyuntamientoRepository {

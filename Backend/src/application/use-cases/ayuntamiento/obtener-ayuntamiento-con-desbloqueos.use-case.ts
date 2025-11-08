@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { AyuntamientoRepository } from '../../../infrastructure/persistence/repositories/ayuntamiento.repository';
 import { AyuntamientoMapper } from '../../../infrastructure/persistence/mappers/ayuntamiento.mapper';
 import { AyuntamientoDomain } from '../../../domain/entities/ayuntamiento.domain';
-import { Ayuntamiento } from '../../../infrastructure/persistence/entities/ayuntamiento.entity';
+import { AyuntamientoConDesbloqueos } from '../../../domain/types/desbloqueos.types';
 
 /**
  * Caso de uso: Obtener un ayuntamiento con sus desbloqueos
@@ -19,7 +19,7 @@ export class ObtenerAyuntamientoConDesbloqueosUseCase {
    * @param id ID del ayuntamiento
    * @returns Ayuntamiento con sus desbloqueos o null si no existe
    */
-  async execute(id: number): Promise<(Ayuntamiento & { desbloqueos: any }) | null> {
+  async execute(id: number): Promise<AyuntamientoConDesbloqueos | null> {
     // Obtener el ayuntamiento con sus relaciones
     const ayuntamientoEntity = await this.ayuntamientoRepository.findWithRelations(id);
 
@@ -34,7 +34,7 @@ export class ObtenerAyuntamientoConDesbloqueosUseCase {
     return {
       ...ayuntamientoEntity,
       desbloqueos,
-    } as any;
+    };
   }
 }
 

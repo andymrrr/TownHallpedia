@@ -1,6 +1,7 @@
 import { Hechizo } from '../../infrastructure/persistence/entities/hechizo.entity';
 import { CreateHechizoDto, UpdateHechizoDto } from '../../presentation/dto/hechizo.dto';
 import { PaginationQueryDto, PageDto } from '../../common/pagination/pagination.dto';
+import { HechizoConDesbloqueos } from '../types/desbloqueos.types';
 
 export interface IHechizoService {
   findAll(): Promise<Hechizo[]>;
@@ -9,7 +10,7 @@ export interface IHechizoService {
   findByName(nombre: string): Promise<Hechizo | null>;
   findByEspacioHechizo(espacioHechizo: number): Promise<Hechizo[]>;
   findWithRelations(id: number): Promise<Hechizo | null>;
-  findWithDesbloqueos(id: number): Promise<Hechizo | null>;
+  findWithDesbloqueos(id: number): Promise<HechizoConDesbloqueos | null>;
   paginate(query: PaginationQueryDto): Promise<PageDto<Hechizo>>;
   createHechizo(createDto: CreateHechizoDto): Promise<Hechizo>;
   updateHechizo(id: number, updateDto: UpdateHechizoDto): Promise<Hechizo | null>;

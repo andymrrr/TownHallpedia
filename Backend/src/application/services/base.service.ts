@@ -17,13 +17,13 @@ export abstract class BaseService<T extends BaseEntity> {
   }
 
   async create(entity: Partial<T>): Promise<T> {
-    const newEntity = this.repository.create(entity as any);
+    const newEntity = this.repository.create(entity);
     const saved = await this.repository.save(newEntity);
     return Array.isArray(saved) ? saved[0] : saved;
   }
 
   async update(id: number, entity: Partial<T>): Promise<T | null> {
-    await this.repository.update(id, entity as any);
+    await this.repository.update(id, entity);
     return this.findOne(id);
   }
 

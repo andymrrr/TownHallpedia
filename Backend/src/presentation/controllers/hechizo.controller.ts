@@ -34,6 +34,8 @@ import { plainToClass } from 'class-transformer';
 import { Respuesta, ok } from '../../common/respuesta/respuesta';
 import { PaginationPipe } from '../pipes/pagination.pipe';
 import { PageDto, PaginationQueryDto } from '../../common/pagination/pagination.dto';
+import { Hechizo } from '../../infrastructure/persistence/entities/hechizo.entity';
+import { HechizoConDesbloqueos } from '../../domain/types/desbloqueos.types';
 
 @ApiTags('Hechizos')
 @Controller('hechizos')
@@ -46,17 +48,17 @@ export class HechizoController {
     description: 'Lista de hechizos obtenida exitosamente',
     type: [HechizoResponseDto],
   })
-  async findAll(): Promise<Respuesta<any[]>> {
+  async findAll(): Promise<Respuesta<Hechizo[]>> {
     const hechizos = await this.hechizoService.findAll();
-    return ok<any[]>(hechizos);
+    return ok<Hechizo[]>(hechizos);
   }
 
   @Get('paginacion')
   @ApiOperation({ summary: 'Paginación de hechizos' })
   @UsePipes(new PaginationPipe())
-  async paginar(@Query() query: PaginationQueryDto): Promise<Respuesta<PageDto<any>>> {
+  async paginar(@Query() query: PaginationQueryDto): Promise<Respuesta<PageDto<Hechizo>>> {
     const page = await this.hechizoService.paginate(query);
-    return ok<PageDto<any>>(page);
+    return ok<PageDto<Hechizo>>(page);
   }
 
   @Get(':id')
@@ -67,12 +69,12 @@ export class HechizoController {
     type: HechizoResponseDto,
   })
   @ApiNotFoundResponse({ description: 'Hechizo no encontrado' })
-  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<any>> {
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<Hechizo>> {
     const hechizo = await this.hechizoService.findOne(id);
     if (!hechizo) {
       throw new NotFoundException('Hechizo no encontrado');
     }
-    return ok<any>(hechizo);
+    return ok<Hechizo>(hechizo);
   }
 
   @Get('tipo/:tipo')
@@ -82,9 +84,9 @@ export class HechizoController {
     description: 'Lista de hechizos obtenida exitosamente',
     type: [HechizoResponseDto],
   })
-  async findByTipo(@Param('tipo') tipo: string): Promise<Respuesta<any[]>> {
+  async findByTipo(@Param('tipo') tipo: string): Promise<Respuesta<Hechizo[]>> {
     const hechizos = await this.hechizoService.findByTipo(tipo);
-    return ok<any[]>(hechizos);
+    return ok<Hechizo[]>(hechizos);
   }
 
   @Get('espacio/:espacioHechizo')
@@ -94,9 +96,9 @@ export class HechizoController {
     description: 'Lista de hechizos obtenida exitosamente',
     type: [HechizoResponseDto],
   })
-  async findByEspacioHechizo(@Param('espacioHechizo', ParseIntPipe) espacioHechizo: number): Promise<Respuesta<any[]>> {
+  async findByEspacioHechizo(@Param('espacioHechizo', ParseIntPipe) espacioHechizo: number): Promise<Respuesta<Hechizo[]>> {
     const hechizos = await this.hechizoService.findByEspacioHechizo(espacioHechizo);
-    return ok<any[]>(hechizos);
+    return ok<Hechizo[]>(hechizos);
   }
 
   @Get(':id/relaciones')
@@ -107,12 +109,12 @@ export class HechizoController {
     type: HechizoResponseDto,
   })
   @ApiNotFoundResponse({ description: 'Hechizo no encontrado' })
-  async findWithRelations(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<any>> {
+  async findWithRelations(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<Hechizo>> {
     const hechizo = await this.hechizoService.findWithRelations(id);
     if (!hechizo) {
       throw new NotFoundException('Hechizo no encontrado');
     }
-    return ok<any>(hechizo);
+    return ok<Hechizo>(hechizo);
   }
 
   @Get(':id/desbloqueos')
@@ -123,12 +125,12 @@ export class HechizoController {
     type: HechizoResponseDto,
   })
   @ApiNotFoundResponse({ description: 'Hechizo no encontrado' })
-  async findWithDesbloqueos(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<any>> {
+  async findWithDesbloqueos(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<HechizoConDesbloqueos>> {
     const hechizo = await this.hechizoService.findWithDesbloqueos(id);
     if (!hechizo) {
       throw new NotFoundException('Hechizo no encontrado');
     }
-    return ok<any>(hechizo);
+    return ok<HechizoConDesbloqueos>(hechizo);
   }
 
   @Post()
@@ -140,9 +142,9 @@ export class HechizoController {
     type: HechizoResponseDto,
   })
   @ApiBadRequestResponse({ description: 'Datos de entrada inválidos' })
-  async create(@Body() createDto: CreateHechizoDto): Promise<Respuesta<any>> {
+  async create(@Body() createDto: CreateHechizoDto): Promise<Respuesta<Hechizo>> {
     const hechizo = await this.hechizoService.createHechizo(createDto);
-    return ok<any>(hechizo, 'Creado exitosamente');
+    return ok<Hechizo>(hechizo, 'Creado exitosamente');
   }
 
   @Put(':id')
@@ -158,12 +160,12 @@ export class HechizoController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateDto: UpdateHechizoDto,
-  ): Promise<Respuesta<any>> {
+  ): Promise<Respuesta<Hechizo>> {
     const hechizo = await this.hechizoService.updateHechizo(id, updateDto);
     if (!hechizo) {
       throw new NotFoundException('Hechizo no encontrado');
     }
-    return ok<any>(hechizo, 'Actualizado exitosamente');
+    return ok<Hechizo>(hechizo, 'Actualizado exitosamente');
   }
 
   @Delete(':id')

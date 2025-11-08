@@ -22,71 +22,72 @@ import { Respuesta, ok } from '../../common/respuesta/respuesta';
 import { UsePipes, Query } from '@nestjs/common';
 import { PaginationPipe } from '../pipes/pagination.pipe';
 import { PageDto, PaginationQueryDto } from '../../common/pagination/pagination.dto';
+import { Tropa } from '../../infrastructure/persistence/entities/tropa.entity';
 
 @Controller('tropas')
 export class TropaController {
   constructor(private readonly tropaService: TropaService) {}
 
   @Get()
-  async findAll(): Promise<Respuesta<any[]>> {
+  async findAll(): Promise<Respuesta<Tropa[]>> {
     const tropas = await this.tropaService.findAll();
-    return ok<any[]>(tropas);
+    return ok<Tropa[]>(tropas);
   }
 
   @Get('paginacion')
   @UsePipes(new PaginationPipe())
-  async paginar(@Query() query: PaginationQueryDto): Promise<Respuesta<PageDto<any>>> {
+  async paginar(@Query() query: PaginationQueryDto): Promise<Respuesta<PageDto<Tropa>>> {
     const page = await this.tropaService.paginate(query);
-    return ok<PageDto<any>>(page);
+    return ok<PageDto<Tropa>>(page);
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<any>> {
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<Tropa>> {
     const tropa = await this.tropaService.findOne(id);
     if (!tropa) {
       throw new NotFoundException('Tropa no encontrada');
     }
-    return ok<any>(tropa);
+    return ok<Tropa>(tropa);
   }
 
   @Get('tipo/:tipo')
-  async findByTipo(@Param('tipo') tipo: string): Promise<Respuesta<any[]>> {
+  async findByTipo(@Param('tipo') tipo: string): Promise<Respuesta<Tropa[]>> {
     const tropas = await this.tropaService.findByTipo(tipo);
-    return ok<any[]>(tropas);
+    return ok<Tropa[]>(tropas);
   }
 
   @Get('cuartel/:cuartelId')
-  async findByCuartel(@Param('cuartelId', ParseIntPipe) cuartelId: number): Promise<Respuesta<any[]>> {
+  async findByCuartel(@Param('cuartelId', ParseIntPipe) cuartelId: number): Promise<Respuesta<Tropa[]>> {
     const tropas = await this.tropaService.findByCuartel(cuartelId);
-    return ok<any[]>(tropas);
+    return ok<Tropa[]>(tropas);
   }
 
   @Get(':id/relaciones')
-  async findWithRelations(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<any>> {
+  async findWithRelations(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<Tropa>> {
     const tropa = await this.tropaService.findWithRelations(id);
     if (!tropa) {
       throw new NotFoundException('Tropa no encontrada');
     }
-    return ok<any>(tropa);
+    return ok<Tropa>(tropa);
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() createDto: CreateTropaDto): Promise<Respuesta<any>> {
+  async create(@Body() createDto: CreateTropaDto): Promise<Respuesta<Tropa>> {
     const tropa = await this.tropaService.createTropa(createDto);
-    return ok<any>(tropa, 'Creado exitosamente');
+    return ok<Tropa>(tropa, 'Creado exitosamente');
   }
 
   @Put(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateDto: UpdateTropaDto,
-  ): Promise<Respuesta<any>> {
+  ): Promise<Respuesta<Tropa>> {
     const tropa = await this.tropaService.updateTropa(id, updateDto);
     if (!tropa) {
       throw new NotFoundException('Tropa no encontrada');
     }
-    return ok<any>(tropa, 'Actualizado exitosamente');
+    return ok<Tropa>(tropa, 'Actualizado exitosamente');
   }
 
   @Delete(':id')

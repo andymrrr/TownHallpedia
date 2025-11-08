@@ -6,6 +6,7 @@ import { CreateHechizoDto, UpdateHechizoDto } from '../../presentation/dto/hechi
 import { IHechizoService } from '../../domain/interfaces/hechizo.service.interface';
 import { HechizoRepository } from '../../infrastructure/persistence/repositories/hechizo.repository';
 import { ObtenerHechizoConDesbloqueosUseCase } from '../use-cases/hechizo/obtener-hechizo-con-desbloqueos.use-case';
+import { HechizoConDesbloqueos } from '../../domain/types/desbloqueos.types';
 
 @Injectable()
 export class HechizoService implements IHechizoService {
@@ -38,7 +39,7 @@ export class HechizoService implements IHechizoService {
     return this.hechizoRepository.findWithRelations(id);
   }
 
-  async findWithDesbloqueos(id: number): Promise<Hechizo | null> {
+  async findWithDesbloqueos(id: number): Promise<HechizoConDesbloqueos | null> {
     return this.obtenerHechizoConDesbloqueosUseCase.execute(id);
   }
 

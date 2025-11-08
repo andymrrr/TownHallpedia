@@ -19,23 +19,23 @@ export class TropaRepository {
   }
 
   async findByTipo(tipo: string): Promise<Tropa[]> {
-    return this.tropaRepo.find({ where: { tipo } as any });
+    return this.tropaRepo.find({ where: { tipo } as FindOptionsWhere<Tropa> });
   }
 
   async findByName(nombre: string): Promise<Tropa | null> {
-    return this.tropaRepo.findOne({ where: { nombre } as any });
+    return this.tropaRepo.findOne({ where: { nombre } as FindOptionsWhere<Tropa> });
   }
 
   async findByCuartel(cuartelId: number): Promise<Tropa[]> {
     return this.tropaRepo.find({
-      where: { desbloqueaEnCuartelId: cuartelId } as any,
+      where: { desbloqueaEnCuartelId: cuartelId } as FindOptionsWhere<Tropa>,
       relations: ['desbloqueaEnCuartel'],
     });
   }
 
   async findWithRelations(id: number): Promise<Tropa | null> {
     return this.tropaRepo.findOne({
-      where: { id } as any,
+      where: { id } as FindOptionsWhere<Tropa>,
       relations: ['desbloqueaEnCuartel', 'nivelesDetalle', 'desbloqueos'],
     });
   }

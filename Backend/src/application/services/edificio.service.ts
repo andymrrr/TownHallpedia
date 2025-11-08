@@ -6,6 +6,7 @@ import { CreateEdificioDto, UpdateEdificioDto } from '../../presentation/dto/edi
 import { IEdificioService } from '../../domain/interfaces/edificio.service.interface';
 import { EdificioRepository } from '../../infrastructure/persistence/repositories/edificio.repository';
 import { ObtenerEdificioConDesbloqueosUseCase } from '../use-cases/edificio/obtener-edificio-con-desbloqueos.use-case';
+import { EdificioConDesbloqueos } from '../../domain/types/desbloqueos.types';
 
 @Injectable()
 export class EdificioService implements IEdificioService {
@@ -34,7 +35,7 @@ export class EdificioService implements IEdificioService {
     return this.edificioRepository.findWithTropas(id);
   }
 
-  async findWithDesbloqueos(id: number): Promise<Edificio | null> {
+  async findWithDesbloqueos(id: number): Promise<EdificioConDesbloqueos | null> {
     return this.obtenerEdificioConDesbloqueosUseCase.execute(id);
   }
 

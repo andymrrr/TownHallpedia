@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { HeroeRepository } from '../../../infrastructure/persistence/repositories/heroe.repository';
-import { Heroe } from '../../../infrastructure/persistence/entities/heroe.entity';
+import { HeroeConDesbloqueos } from '../../../domain/types/desbloqueos.types';
 
 /**
  * Caso de uso: Obtener un héroe con sus desbloqueos
@@ -11,7 +11,7 @@ export class ObtenerHeroeConDesbloqueosUseCase {
     private readonly heroeRepository: HeroeRepository,
   ) {}
 
-  async execute(id: number): Promise<(Heroe & { desbloqueos: any }) | null> {
+  async execute(id: number): Promise<HeroeConDesbloqueos | null> {
     const heroeEntity = await this.heroeRepository.findOne(id);
 
     if (!heroeEntity) {
@@ -22,14 +22,8 @@ export class ObtenerHeroeConDesbloqueosUseCase {
 
     return {
       ...heroeEntity,
-      desbloqueos: desbloqueos.map(desbloqueo => ({
-        ayuntamientoId: desbloqueo.ayuntamientoId,
-        ayuntamiento: desbloqueo.ayuntamiento,
-        esNuevo: desbloqueo.esNuevo,
-        nivelMinimoDisponible: desbloqueo.nivelMinimoDisponible,
-        nivelMaximoDisponible: desbloqueo.nivelMaximoDisponible,
-      })),
-    } as any;
+      desbloqueos,
+    };
   }
 }
 

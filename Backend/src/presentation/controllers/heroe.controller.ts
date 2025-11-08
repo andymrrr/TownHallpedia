@@ -34,6 +34,8 @@ import { plainToClass } from 'class-transformer';
 import { Respuesta, ok } from '../../common/respuesta/respuesta';
 import { PaginationPipe } from '../pipes/pagination.pipe';
 import { PageDto, PaginationQueryDto } from '../../common/pagination/pagination.dto';
+import { Heroe } from '../../infrastructure/persistence/entities/heroe.entity';
+import { HeroeConDesbloqueos } from '../../domain/types/desbloqueos.types';
 
 @ApiTags('Héroes')
 @Controller('heroes')
@@ -46,17 +48,17 @@ export class HeroeController {
     description: 'Lista de héroes obtenida exitosamente',
     type: [HeroeResponseDto],
   })
-  async findAll(): Promise<Respuesta<any[]>> {
+  async findAll(): Promise<Respuesta<Heroe[]>> {
     const heroes = await this.heroeService.findAll();
-    return ok<any[]>(heroes);
+    return ok<Heroe[]>(heroes);
   }
 
   @Get('paginacion')
   @ApiOperation({ summary: 'Paginación de héroes' })
   @UsePipes(new PaginationPipe())
-  async paginar(@Query() query: PaginationQueryDto): Promise<Respuesta<PageDto<any>>> {
+  async paginar(@Query() query: PaginationQueryDto): Promise<Respuesta<PageDto<Heroe>>> {
     const page = await this.heroeService.paginate(query);
-    return ok<PageDto<any>>(page);
+    return ok<PageDto<Heroe>>(page);
   }
 
   @Get(':id')
@@ -67,12 +69,12 @@ export class HeroeController {
     type: HeroeResponseDto,
   })
   @ApiNotFoundResponse({ description: 'Héroe no encontrado' })
-  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<any>> {
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<Heroe>> {
     const heroe = await this.heroeService.findOne(id);
     if (!heroe) {
       throw new NotFoundException('Héroe no encontrado');
     }
-    return ok<any>(heroe);
+    return ok<Heroe>(heroe);
   }
 
   @Get('tipo-recurso/:tipoRecurso')
@@ -82,9 +84,9 @@ export class HeroeController {
     description: 'Lista de héroes obtenida exitosamente',
     type: [HeroeResponseDto],
   })
-  async findByTipoRecurso(@Param('tipoRecurso') tipoRecurso: string): Promise<Respuesta<any[]>> {
+  async findByTipoRecurso(@Param('tipoRecurso') tipoRecurso: string): Promise<Respuesta<Heroe[]>> {
     const heroes = await this.heroeService.findByTipoRecurso(tipoRecurso);
-    return ok<any[]>(heroes);
+    return ok<Heroe[]>(heroes);
   }
 
   @Get(':id/relaciones')
@@ -95,12 +97,12 @@ export class HeroeController {
     type: HeroeResponseDto,
   })
   @ApiNotFoundResponse({ description: 'Héroe no encontrado' })
-  async findWithRelations(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<any>> {
+  async findWithRelations(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<Heroe>> {
     const heroe = await this.heroeService.findWithRelations(id);
     if (!heroe) {
       throw new NotFoundException('Héroe no encontrado');
     }
-    return ok<any>(heroe);
+    return ok<Heroe>(heroe);
   }
 
   @Get(':id/desbloqueos')
@@ -111,12 +113,12 @@ export class HeroeController {
     type: HeroeResponseDto,
   })
   @ApiNotFoundResponse({ description: 'Héroe no encontrado' })
-  async findWithDesbloqueos(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<any>> {
+  async findWithDesbloqueos(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<HeroeConDesbloqueos>> {
     const heroe = await this.heroeService.findWithDesbloqueos(id);
     if (!heroe) {
       throw new NotFoundException('Héroe no encontrado');
     }
-    return ok<any>(heroe);
+    return ok<HeroeConDesbloqueos>(heroe);
   }
 
   @Post()
@@ -128,9 +130,9 @@ export class HeroeController {
     type: HeroeResponseDto,
   })
   @ApiBadRequestResponse({ description: 'Datos de entrada inválidos' })
-  async create(@Body() createDto: CreateHeroeDto): Promise<Respuesta<any>> {
+  async create(@Body() createDto: CreateHeroeDto): Promise<Respuesta<Heroe>> {
     const heroe = await this.heroeService.createHeroe(createDto);
-    return ok<any>(heroe, 'Creado exitosamente');
+    return ok<Heroe>(heroe, 'Creado exitosamente');
   }
 
   @Put(':id')
@@ -146,12 +148,12 @@ export class HeroeController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateDto: UpdateHeroeDto,
-  ): Promise<Respuesta<any>> {
+  ): Promise<Respuesta<Heroe>> {
     const heroe = await this.heroeService.updateHeroe(id, updateDto);
     if (!heroe) {
       throw new NotFoundException('Héroe no encontrado');
     }
-    return ok<any>(heroe, 'Actualizado exitosamente');
+    return ok<Heroe>(heroe, 'Actualizado exitosamente');
   }
 
   @Delete(':id')

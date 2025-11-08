@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AyuntamientoRepository } from '../../../infrastructure/persistence/repositories/ayuntamiento.repository';
 import { Ayuntamiento } from '../../../infrastructure/persistence/entities/ayuntamiento.entity';
+import { AyuntamientoConDesbloqueos, DesbloqueosResult } from '../../../domain/types/desbloqueos.types';
 
 /**
  * Caso de uso: Obtener un ayuntamiento por nivel con desbloqueos acumulativos
@@ -17,7 +18,7 @@ export class ObtenerAyuntamientoPorNivelConDesbloqueosUseCase {
    * @param nivel Nivel del ayuntamiento
    * @returns Ayuntamiento con desbloqueos acumulativos o null si no existe
    */
-  async execute(nivel: number): Promise<(Ayuntamiento & { desbloqueos: any }) | null> {
+  async execute(nivel: number): Promise<AyuntamientoConDesbloqueos | null> {
     // Obtener el ayuntamiento por nivel
     const ayuntamiento = await this.ayuntamientoRepository.findByNivel(nivel);
 
@@ -42,18 +43,18 @@ export class ObtenerAyuntamientoPorNivelConDesbloqueosUseCase {
     const edificios = this.procesarDesbloqueos(todosDesbloqueosEdificios, nivel);
     const animales = this.procesarDesbloqueos(todosDesbloqueosAnimales, nivel);
 
+    const desbloqueos: DesbloqueosResult = {
+      heroes,
+      tropas,
+      hechizos,
+      edificios,
+      animales,
+    };
+
     return {
       ...ayuntamiento,
-      desbloqueos: {
-        heroes,
-        tropas,
-        hechizos,
-        edificios,
-        animales,
-        // Mantener compatibilidad con formato anterior (array plano)
-        todos: [...heroes, ...tropas, ...hechizos, ...edificios, ...animales],
-      },
-    } as any;
+      desbloqueos,
+    };
   }
 
   /**

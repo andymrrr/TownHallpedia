@@ -22,29 +22,29 @@ export class HechizoRepository {
   }
 
   async findByTipo(tipo: string): Promise<Hechizo[]> {
-    return this.hechizoRepo.find({ where: { tipo } as any });
+    return this.hechizoRepo.find({ where: { tipo } as FindOptionsWhere<Hechizo> });
   }
 
   async findByName(nombre: string): Promise<Hechizo | null> {
-    return this.hechizoRepo.findOne({ where: { nombre } as any });
+    return this.hechizoRepo.findOne({ where: { nombre } as FindOptionsWhere<Hechizo> });
   }
 
   async findByEspacioHechizo(espacioHechizo: number): Promise<Hechizo[]> {
-    return this.hechizoRepo.find({ where: { espacioHechizo } as any });
+    return this.hechizoRepo.find({ where: { espacioHechizo } as FindOptionsWhere<Hechizo> });
   }
 
   async findWithRelations(id: number): Promise<Hechizo | null> {
     return this.hechizoRepo.findOne({
-      where: { id } as any,
+      where: { id } as FindOptionsWhere<Hechizo>,
       relations: ['nivelesDetalle', 'desbloqueos'],
     });
   }
 
-  async findDesbloqueosByHechizoId(id: number) {
+  async findDesbloqueosByHechizoId(id: number): Promise<DesbloqueosAyuntamientoHechizo[]> {
     return this.desbloqueosRepo.find({
       where: { hechizoId: id },
       relations: ['ayuntamiento'],
-      order: { ayuntamiento: { nivel: 'ASC' } } as any,
+      order: { ayuntamiento: { nivel: 'ASC' } },
     });
   }
 

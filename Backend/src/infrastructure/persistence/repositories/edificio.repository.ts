@@ -22,31 +22,31 @@ export class EdificioRepository {
   }
 
   async findByTipo(tipo: string): Promise<Edificio[]> {
-    return this.edificioRepo.find({ where: { tipo } as any });
+    return this.edificioRepo.find({ where: { tipo } as FindOptionsWhere<Edificio> });
   }
 
   async findByName(nombre: string): Promise<Edificio | null> {
-    return this.edificioRepo.findOne({ where: { nombre } as any });
+    return this.edificioRepo.findOne({ where: { nombre } as FindOptionsWhere<Edificio> });
   }
 
   async findWithTropas(id: number): Promise<Edificio | null> {
     return this.edificioRepo.findOne({
-      where: { id } as any,
+      where: { id } as FindOptionsWhere<Edificio>,
       relations: ['tropas', 'nivelesDetalle', 'desbloqueos'],
     });
   }
 
   async findWithRelations(id: number): Promise<Edificio | null> {
     return this.edificioRepo.findOne({
-      where: { id } as any,
+      where: { id } as FindOptionsWhere<Edificio>,
     });
   }
 
-  async findDesbloqueosByEdificioId(id: number) {
+  async findDesbloqueosByEdificioId(id: number): Promise<DesbloqueosAyuntamientoEdificio[]> {
     return this.desbloqueosRepo.find({
       where: { edificioId: id },
       relations: ['ayuntamiento'],
-      order: { ayuntamiento: { nivel: 'ASC' } } as any,
+      order: { ayuntamiento: { nivel: 'ASC' } },
     });
   }
 

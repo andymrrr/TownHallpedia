@@ -32,16 +32,21 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
       if (typeof exceptionResponse === 'string') {
         message = exceptionResponse;
-      } else if (typeof exceptionResponse === 'object') {
-        const responseObj = exceptionResponse as any;
-        message = responseObj.message || message;
+      } else if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
+        const responseObj = exceptionResponse as {
+          message?: string | string[];
+          errorTecnico?: string;
+          tipoError?: string;
+        };
+        message = Array.isArray(responseObj.message) 
+          ? 'Error de validación' 
+          : (responseObj.message || message);
         errorTecnico = responseObj.errorTecnico;
         tipoError = responseObj.tipoError;
         
         // Manejar arrays de mensajes (validación)
         if (Array.isArray(responseObj.message)) {
           errores = responseObj.message;
-          message = 'Error de validación';
         }
       }
 

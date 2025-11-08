@@ -7,6 +7,7 @@ import { IAyuntamientoService } from '../../domain/interfaces/ayuntamiento.servi
 import { AyuntamientoRepository } from '../../infrastructure/persistence/repositories/ayuntamiento.repository';
 import { ObtenerAyuntamientoConDesbloqueosUseCase } from '../use-cases/ayuntamiento/obtener-ayuntamiento-con-desbloqueos.use-case';
 import { ObtenerAyuntamientoPorNivelConDesbloqueosUseCase } from '../use-cases/ayuntamiento/obtener-ayuntamiento-por-nivel-con-desbloqueos.use-case';
+import { AyuntamientoConDesbloqueos } from '../../domain/types/desbloqueos.types';
 
 @Injectable()
 export class AyuntamientoService implements IAyuntamientoService {
@@ -32,11 +33,11 @@ export class AyuntamientoService implements IAyuntamientoService {
     return this.ayuntamientoRepository.findByTipoRecurso(tipoRecursoId);
   }
 
-  async findWithDesbloqueos(id: number): Promise<Ayuntamiento | null> {
+  async findWithDesbloqueos(id: number): Promise<AyuntamientoConDesbloqueos | null> {
     return this.obtenerAyuntamientoConDesbloqueosUseCase.execute(id);
   }
 
-  async findByNivelWithDesbloqueos(nivel: number): Promise<Ayuntamiento | null> {
+  async findByNivelWithDesbloqueos(nivel: number): Promise<AyuntamientoConDesbloqueos | null> {
     return this.obtenerAyuntamientoPorNivelConDesbloqueosUseCase.execute(nivel);
   }
 

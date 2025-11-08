@@ -34,6 +34,8 @@ import { plainToClass } from 'class-transformer';
 import { Respuesta, ok } from '../../common/respuesta/respuesta';
 import { PaginationPipe } from '../pipes/pagination.pipe';
 import { PageDto, PaginationQueryDto } from '../../common/pagination/pagination.dto';
+import { Edificio } from '../../infrastructure/persistence/entities/edificio.entity';
+import { EdificioConDesbloqueos } from '../../domain/types/desbloqueos.types';
 
 @ApiTags('Edificios')
 @Controller('edificios')
@@ -46,9 +48,9 @@ export class EdificioController {
     description: 'Lista de edificios obtenida exitosamente',
     type: [EdificioResponseDto],
   })
-  async findAll(): Promise<Respuesta<any[]>> {
+  async findAll(): Promise<Respuesta<Edificio[]>> {
     const edificios = await this.edificioService.findAll();
-    return ok<any[]>(edificios);
+    return ok<Edificio[]>(edificios);
   }
 
   @Get('paginacion')
@@ -57,9 +59,9 @@ export class EdificioController {
     description: 'Página de edificios obtenida exitosamente',
   })
   @UsePipes(new PaginationPipe())
-  async paginar(@Query() query: PaginationQueryDto): Promise<Respuesta<PageDto<any>>> {
+  async paginar(@Query() query: PaginationQueryDto): Promise<Respuesta<PageDto<Edificio>>> {
     const page = await this.edificioService.paginate(query);
-    return ok<PageDto<any>>(page);
+    return ok<PageDto<Edificio>>(page);
   }
 
   @Get(':id')
@@ -70,12 +72,12 @@ export class EdificioController {
     type: EdificioResponseDto,
   })
   @ApiNotFoundResponse({ description: 'Edificio no encontrado' })
-  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<any>> {
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<Edificio>> {
     const edificio = await this.edificioService.findOne(id);
     if (!edificio) {
       throw new NotFoundException('Edificio no encontrado');
     }
-    return ok<any>(edificio);
+    return ok<Edificio>(edificio);
   }
 
   @Get('tipo/:tipo')
@@ -85,9 +87,9 @@ export class EdificioController {
     description: 'Lista de edificios del tipo especificado',
     type: [EdificioResponseDto],
   })
-  async findByTipo(@Param('tipo') tipo: string): Promise<Respuesta<any[]>> {
+  async findByTipo(@Param('tipo') tipo: string): Promise<Respuesta<Edificio[]>> {
     const edificios = await this.edificioService.findByTipo(tipo);
-    return ok<any[]>(edificios);
+    return ok<Edificio[]>(edificios);
   }
 
   @Get(':id/tropas')
@@ -98,12 +100,12 @@ export class EdificioController {
     type: EdificioResponseDto,
   })
   @ApiNotFoundResponse({ description: 'Edificio no encontrado' })
-  async findWithTropas(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<any>> {
+  async findWithTropas(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<Edificio>> {
     const edificio = await this.edificioService.findWithTropas(id);
     if (!edificio) {
       throw new NotFoundException('Edificio no encontrado');
     }
-    return ok<any>(edificio);
+    return ok<Edificio>(edificio);
   }
 
   @Get(':id/desbloqueos')
@@ -114,12 +116,12 @@ export class EdificioController {
     type: EdificioResponseDto,
   })
   @ApiNotFoundResponse({ description: 'Edificio no encontrado' })
-  async findWithDesbloqueos(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<any>> {
+  async findWithDesbloqueos(@Param('id', ParseIntPipe) id: number): Promise<Respuesta<EdificioConDesbloqueos>> {
     const edificio = await this.edificioService.findWithDesbloqueos(id);
     if (!edificio) {
       throw new NotFoundException('Edificio no encontrado');
     }
-    return ok<any>(edificio);
+    return ok<EdificioConDesbloqueos>(edificio);
   }
 
   @Post()
@@ -131,9 +133,9 @@ export class EdificioController {
     type: EdificioResponseDto,
   })
   @ApiBadRequestResponse({ description: 'Datos inválidos' })
-  async create(@Body() createDto: CreateEdificioDto): Promise<Respuesta<any>> {
+  async create(@Body() createDto: CreateEdificioDto): Promise<Respuesta<Edificio>> {
     const edificio = await this.edificioService.createEdificio(createDto);
-    return ok<any>(edificio, 'Creado exitosamente');
+    return ok<Edificio>(edificio, 'Creado exitosamente');
   }
 
   @Put(':id')
@@ -149,12 +151,12 @@ export class EdificioController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateDto: UpdateEdificioDto,
-  ): Promise<Respuesta<any>> {
+  ): Promise<Respuesta<Edificio>> {
     const edificio = await this.edificioService.updateEdificio(id, updateDto);
     if (!edificio) {
       throw new NotFoundException('Edificio no encontrado');
     }
-    return ok<any>(edificio, 'Actualizado exitosamente');
+    return ok<Edificio>(edificio, 'Actualizado exitosamente');
   }
 
   @Delete(':id')

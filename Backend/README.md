@@ -312,77 +312,79 @@ npm run format             # Formatea código con Prettier
 
 ## 🏗️ Arquitectura
 
+El proyecto implementa una **Arquitectura en Capas Mejorada** siguiendo principios de Clean Architecture y Domain-Driven Design:
+
 ```
 src/
-├── common/                # Utilidades compartidas
-│   ├── pagination/        # Sistema de paginación
-│   │   ├── pagination.dto.ts
-│   │   ├── pagination.pipe.ts
-│   │   └── paginate-typeorm.ts
-│   └── respuesta/         # Formato de respuesta estandarizado
-│       └── respuesta.ts
-├── config/                # Configuraciones
-│   ├── database.config.ts # Configuración de TypeORM
-│   ├── env.config.ts      # Configuración de variables de entorno
-│   ├── env.validation.ts  # Validación de variables de entorno
-│   └── swagger.config.ts  # Configuración de Swagger
-├── controllers/           # Controladores REST
-│   ├── ayuntamiento.controller.ts
-│   ├── edificio.controller.ts
-│   ├── hechizo.controller.ts
-│   ├── heroe.controller.ts
-│   └── tropa.controller.ts
-├── dto/                   # Data Transfer Objects
-│   ├── base.dto.ts
-│   ├── ayuntamiento.dto.ts
-│   ├── edificio.dto.ts
-│   ├── habilidad.dto.ts
-│   ├── hechizo.dto.ts
-│   ├── heroe.dto.ts
-│   └── tropa.dto.ts
-├── entities/              # Entidades TypeORM
-│   ├── base.entity.ts
-│   ├── ayuntamiento.entity.ts
-│   ├── edificio.entity.ts
-│   ├── tropa.entity.ts
-│   ├── heroe.entity.ts
-│   ├── hechizo.entity.ts
-│   ├── animal.entity.ts
-│   ├── habilidad.entity.ts
-│   ├── recurso.entity.ts
-│   ├── nivel-detalle-*.entity.ts  # Entidades de nivel detalle
-│   └── desbloqueos-ayuntamiento-*.entity.ts  # Entidades de desbloqueos
-├── migrations/            # Migraciones de base de datos
-│   └── 1762191053941-InitialSchema.ts
-├── modules/               # Módulos de NestJS
+├── common/                    # Utilidades compartidas
+│   ├── filters/              # Filtros globales (excepciones)
+│   ├── pagination/           # Sistema de paginación
+│   ├── respuesta/            # Formato de respuesta estandarizado
+│   └── logger/               # Servicio de logging
+│
+├── config/                    # Configuraciones
+│   ├── database.config.ts    # Configuración de TypeORM
+│   ├── env.config.ts         # Configuración de variables de entorno
+│   ├── env.validation.ts     # Validación de variables de entorno
+│   └── swagger.config.ts     # Configuración de Swagger
+│
+├── domain/                    # Capa de Dominio
+│   ├── entities/             # Entidades de dominio (lógica de negocio)
+│   ├── interfaces/           # Interfaces/Contratos de servicios
+│   └── types/                # Tipos compartidos
+│
+├── application/               # Capa de Aplicación
+│   ├── services/             # Servicios de aplicación
+│   │   ├── base.service.ts
+│   │   ├── ayuntamiento.service.ts
+│   │   ├── edificio.service.ts
+│   │   ├── heroe.service.ts
+│   │   ├── hechizo.service.ts
+│   │   └── tropa.service.ts
+│   └── use-cases/            # Casos de uso
+│       ├── ayuntamiento/
+│       ├── edificio/
+│       ├── heroe/
+│       └── hechizo/
+│
+├── infrastructure/            # Capa de Infraestructura
+│   └── persistence/          # Persistencia de datos
+│       ├── entities/         # Entidades TypeORM
+│       ├── repositories/     # Implementación de repositorios
+│       ├── mappers/          # Mappers dominio <-> persistencia
+│       ├── migrations/       # Migraciones de base de datos
+│       └── seed/             # Sistema de seed de datos
+│
+├── presentation/              # Capa de Presentación
+│   ├── controllers/          # Controladores REST
+│   │   ├── ayuntamiento.controller.ts
+│   │   ├── edificio.controller.ts
+│   │   ├── heroe.controller.ts
+│   │   ├── hechizo.controller.ts
+│   │   └── tropa.controller.ts
+│   ├── dto/                  # DTOs de presentación
+│   └── pipes/                # Pipes de validación
+│
+├── modules/                   # Módulos NestJS (orquestación)
 │   ├── ayuntamiento.module.ts
 │   ├── edificio.module.ts
-│   ├── hechizo.module.ts
 │   ├── heroe.module.ts
+│   ├── hechizo.module.ts
 │   └── tropa.module.ts
-├── seed/                  # Sistema de seed de datos
-│   ├── seed.controller.ts
-│   ├── seed.service.ts
-│   ├── seed.module.ts
-│   ├── dto/
-│   ├── exceptions/
-│   ├── helpers/
-│   ├── interfaces/
-│   ├── seed-data/
-│   ├── services/
-│   └── utils/
-├── services/              # Lógica de negocio
-│   ├── base.service.ts
-│   ├── ayuntamiento.service.ts
-│   ├── edificio.service.ts
-│   ├── hechizo.service.ts
-│   ├── heroe.service.ts
-│   └── tropa.service.ts
-├── app.module.ts          # Módulo principal
-├── app.controller.ts      # Controlador principal
-├── app.service.ts         # Servicio principal
-└── main.ts                # Punto de entrada
+│
+├── app.module.ts              # Módulo principal
+├── app.controller.ts          # Controlador principal
+├── app.service.ts             # Servicio principal
+└── main.ts                    # Punto de entrada
 ```
+
+### 📐 Principios de la Arquitectura
+
+- **Separación de Responsabilidades**: Cada capa tiene una responsabilidad específica
+- **Inversión de Dependencias**: Las capas superiores dependen de abstracciones (interfaces)
+- **Domain-Driven Design**: El dominio es independiente de la infraestructura
+- **Type Safety**: 100% tipado en TypeScript, sin uso de `any`
+- **Testabilidad**: Arquitectura diseñada para facilitar testing
 
 ## 🎯 Características Técnicas
 

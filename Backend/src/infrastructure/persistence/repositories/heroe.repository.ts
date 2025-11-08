@@ -27,25 +27,28 @@ export class HeroeRepository {
   }
 
   async findByTipoRecurso(tipoRecurso: string): Promise<Heroe[]> {
-    return this.heroeRepo.find({ where: { tipoRecurso } as any });
+    return this.heroeRepo.find({ 
+      where: { tipoRecurso: { nombre: tipoRecurso } } as FindOptionsWhere<Heroe>,
+      relations: ['tipoRecurso', 'habilidades'],
+    });
   }
 
   async findByName(nombre: string): Promise<Heroe | null> {
-    return this.heroeRepo.findOne({ where: { nombre } as any });
+    return this.heroeRepo.findOne({ where: { nombre } as FindOptionsWhere<Heroe> });
   }
 
   async findWithRelations(id: number): Promise<Heroe | null> {
     return this.heroeRepo.findOne({
-      where: { id } as any,
+      where: { id } as FindOptionsWhere<Heroe>,
       relations: ['tipoRecurso', 'habilidades', 'nivelesDetalle', 'desbloqueos'],
     });
   }
 
-  async findDesbloqueosByHeroeId(id: number) {
+  async findDesbloqueosByHeroeId(id: number): Promise<DesbloqueosAyuntamientoHeroe[]> {
     return this.desbloqueosRepo.find({
       where: { heroeId: id },
       relations: ['ayuntamiento'],
-      order: { ayuntamiento: { nivel: 'ASC' } } as any,
+      order: { ayuntamiento: { nivel: 'ASC' } },
     });
   }
 
